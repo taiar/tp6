@@ -1,0 +1,10 @@
+.cproject
+.project
+Debug*
+Release*
+*.o
+*.h.*
+tp*
+*.swp
+src/testes/*
+src/saida
