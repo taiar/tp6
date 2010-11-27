@@ -1,9 +1,9 @@
-a nível de
+a nivel de
 a nivel de
 deletar
 delete
-em nível de
+em nivel de
 em nivel de
 Diz-se no Congresso que
-em meio às dúvidas que permeiam todas as sucessões
-A solução proposta no algoritmo LiTE pode ser facilmente utilizada nas mais diversas aplicações dos algoritmos de sincronização tradicionais sem a necessidade de modificação
+em meio as duvidas que permeiam todas as sucessoes
+A solucao proposta no algoritmo LiTE pode ser facilmente utilizada nas mais diversas aplicacoes dos algoritmos de sincronizacao tradicionais sem a necessidade de modificacao
