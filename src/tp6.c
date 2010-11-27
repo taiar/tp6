@@ -18,5 +18,6 @@ int main(int argc, char **argv)
 {
   char **StopWords = stopWordsCarrega();
   printf("%d\n", stopWordsVerifica("vos", StopWords));
+  stopWordsFree(StopWords);
   return EXIT_SUCCESS;
 }
