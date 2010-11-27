@@ -8,8 +8,11 @@ RM = *.o *.h.gch $(BIN) $(SAIDAS)
 io: io.c io.h
 	$(CC) -c io.c io.h $(CFLAGS)
 	
-main: io
-	$(CC) -o $(BIN) tp6.c io.o $(CFLAGS)
+stop: stopWords.c stopWords.h
+	$(CC) -c stopWords.c stopWords.h $(CFLAGS)
+	
+main: io stop
+	$(CC) -o $(BIN) tp6.c io.o stopWords.o $(CFLAGS)
 
 valgrind: clean main
 	valgrind ./$(BIN) $(XFLAGSA)

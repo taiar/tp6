@@ -12,6 +12,7 @@
 #include <sys/resource.h>
 
 #include "io.h"
+#include "stopWords.h"
 
 int main(int argc, char **argv)
 {
