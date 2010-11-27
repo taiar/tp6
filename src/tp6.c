@@ -16,6 +16,7 @@
 
 int main(int argc, char **argv)
 {
-
+  char **StopWords = stopWordsCarrega();
+  printf("%d\n", stopWordsVerifica("vos", StopWords));
   return EXIT_SUCCESS;
 }

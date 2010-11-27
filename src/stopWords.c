@@ -7,7 +7,7 @@
 
 #include "stopWords.h"
 
-char* stopWordsCarrega()
+char** stopWordsCarrega()
 {
   int i;
   FILE *arq;
@@ -28,4 +28,12 @@ char* stopWordsCarrega()
   free(arq);
 
   return v;
+}
+
+int stopWordsVerifica(char *palavra, char **stopWords)
+{
+  int i;
+  for (i = 0; i < STOP_WORDS_COUNTER; i += 1)
+    if (strcmp(stopWords[i], palavra) == 0) return 1;
+  return 0;
 }

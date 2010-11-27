@@ -15,6 +15,14 @@
 #define STOP_WORDS_FILE "stopwords.txt"
 #define STOP_WORDS_COUNTER 257
 
-char* stopWordsCarrega();
+/**
+ * Carrega Stop Words em memória e retorna um vetor delas.
+ */
+char** stopWordsCarrega();
+
+/**
+ * Verifica se uma palavra é Stop Word.
+ */
+int stopWordsVerifica(char*, char**);
 
 #endif /* STOPWORDS_H_ */
