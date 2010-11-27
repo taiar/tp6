@@ -16,8 +16,21 @@
 
 int main(int argc, char **argv)
 {
+  Entrada entrada;
+  entradaInit(&entrada);
+  if (!entradaLe(argc, argv, &entrada)) return EXIT_FAILURE;
   char **StopWords = stopWordsCarrega();
-  printf("%d\n", stopWordsVerifica("vos", StopWords));
+
+  char buff[1024];
+
+  fscanf(entrada.entrada, "", buff);
+
+  printf("%s\n", buff);
+
+  //printf("%d\n", stopWordsVerifica("vos", StopWords));
+
   stopWordsFree(StopWords);
+  entradaFree(&entrada);
+
   return EXIT_SUCCESS;
 }

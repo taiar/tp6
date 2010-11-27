@@ -25,4 +25,9 @@ char** stopWordsCarrega();
  */
 int stopWordsVerifica(char*, char**);
 
+/**
+ * Libera memória utilizada pelas Stop Words.
+ */
+void stopWordsFree(char**);
+
 #endif /* STOPWORDS_H_ */
