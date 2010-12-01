@@ -21,13 +21,34 @@ int main(int argc, char **argv)
   if (!entradaLe(argc, argv, &entrada)) return EXIT_FAILURE;
   char **StopWords = stopWordsCarrega();
 
-  char buff[1024];
+  int val;
+  char palavra[90];
 
-  fscanf(entrada.entrada, "", buff);
+  int pal = 0;
+  int nl = 1;
+  int frase = 0;
+  int parag = 0;
 
-  printf("%s\n", buff);
+  val = entradaGetToken(&entrada, palavra);
+  while (val)
+  {
+    if (val == 1) pal += 1;
+    else if (val == 2)
+    {
+      pal += 1;
+      frase += 1;
+    }
+    else if (val == 3)
+      nl += 1;
+    else if (val > 3)
+    {
+      parag += 1;
+      nl += val - 2;
+    }
+    val = entradaGetToken(&entrada, palavra);
+  }
 
-  //printf("%d\n", stopWordsVerifica("vos", StopWords));
+  printf("Palavras: %d\nFrases: %d\nLinhas: %d\nParagrafos: %d\n", pal, frase, nl, parag);
 
   stopWordsFree(StopWords);
   entradaFree(&entrada);

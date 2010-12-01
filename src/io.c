@@ -37,7 +37,7 @@ int entradaLe(int argc, char** argv, Entrada *entrada)
     return 0;
   }
 
-  entrada->entrada = fopen(entrada->i, "r");
+  entrada->entrada = fopen(entrada->i, "rb");
   if (!entrada->entrada)
   {
     printf("O arquivo de entrada não está correto.\n");
@@ -45,12 +45,74 @@ int entradaLe(int argc, char** argv, Entrada *entrada)
   }
 
   entrada->saida = fopen(entrada->o, "w");
-  if(!entrada->saida)
+  if (!entrada->saida)
   {
     printf("Não foi possível criar o arquivo de saída.\n");
     return 0;
   }
   return 1;
+}
+
+int entradaGetToken(Entrada *in, char *token)
+{
+  int count = 0, estado = 0, nlCounter = 0;
+  char buff;
+
+  token[0] = '\0';
+  buff = getc(in->entrada);
+
+  while (buff != EOF)
+  {
+    if(estado == 0)
+    {
+      if(isalnum(buff) || buff == '-') //recebe o primeiro caractere de palavra
+        estado = 1;
+      else if(buff == '\n') //recebe quebra de linha
+        return 3; //casa nova linha
+      else if(buff == EOF)
+        return 0; //casa fim do arquivo
+    }
+    if(estado == 1)
+    {
+      if(isalnum(buff) || buff == '-') //continua recebendo caracteres válidos
+      {
+        token[count] = buff;
+        count += 1;
+        token[count] = '\0';
+      }
+      else if(buff == ' ') //recebe espaço
+        return 1; //casa a palavra
+      else if(ispunct(buff)) //recebe pontuação
+      {
+        if(buff == ',') //não indica fim de frase
+          return 1; //casa a palavra
+        else
+          return 2; //casa a frase
+      }
+      else if(buff == '\n') //recebe quebra de linha
+        estado = 2; //estado que analisa quebras de linha
+      else if(buff == EOF)
+        return 0; //casa fim do arquivo
+    }
+    if(estado == 2)
+    {
+      buff = getc(in->entrada);
+      if(buff == '\n') //recebe um parágrafo
+      {
+        while(buff == '\n')
+        {
+          buff = getc(in->entrada);
+          nlCounter += 1;
+        }
+        nlCounter += 4;
+        return nlCounter; //casa o parágrafo
+      }
+      fseek(in->entrada, -1, SEEK_CUR);
+      return 3; //casa quebra de linha
+    }
+    buff = getc(in->entrada);
+  }
+  return 0; //EOF
 }
 
 void entradaFree(Entrada *entrada)

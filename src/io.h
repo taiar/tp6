@@ -28,6 +28,11 @@ void entradaInit(Entrada*);
 int entradaLe(int, char**, Entrada*);
 
 /**
+ * Traz "token" do arquivo lido de seguindo a lógica do texto.
+ */
+int entradaGetToken(Entrada*, char*);
+
+/**
  * Libera dados utilizados na leitura da entrada.
  */
 void entradaFree(Entrada*);
