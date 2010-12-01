@@ -14,6 +14,11 @@ void entradaInit(Entrada *entrada)
   entrada->saidaE3 = NULL;
 }
 
+void entradaResetaLeitura(Entrada *in)
+{
+  fseek(in->entrada, 0, SEEK_SET);
+}
+
 int entradaLe(int argc, char** argv, Entrada *entrada)
 {
   entradaInit(entrada);

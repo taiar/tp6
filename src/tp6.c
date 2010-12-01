@@ -23,6 +23,7 @@ int main(int argc, char **argv)
   char **StopWords = stopWordsCarrega();
 
   etapa1(&entrada, StopWords);
+  entradaResetaLeitura(&entrada);
 
   stopWordsFree(StopWords);
   entradaFree(&entrada);

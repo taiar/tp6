@@ -23,6 +23,11 @@ typedef struct
 void entradaInit(Entrada*);
 
 /**
+ * Move o ponteiro de leitura para o inicio do arquivo.
+ */
+void entradaResetaLeitura(Entrada*);
+
+/**
  * Faz leitura dos dados de entrada e os armazena.
  */
 int entradaLe(int, char**, Entrada*);
