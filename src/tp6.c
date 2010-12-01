@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     else if (val > 3)
     {
       parag += 1;
-      nl += val - 2;
+      nl += val;
     }
     val = entradaGetToken(&entrada, palavra);
   }

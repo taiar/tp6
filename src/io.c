@@ -68,7 +68,7 @@ int entradaGetToken(Entrada *in, char *token)
       if(isalnum(buff) || buff == '-') //recebe o primeiro caractere de palavra
         estado = 1;
       else if(buff == '\n') //recebe quebra de linha
-        return 3; //casa nova linha
+        estado = 2; //trata nova linha
       else if(buff == EOF)
         return 0; //casa fim do arquivo
     }
@@ -96,6 +96,7 @@ int entradaGetToken(Entrada *in, char *token)
     }
     if(estado == 2)
     {
+      printf("Oi manolos\n");
       buff = getc(in->entrada);
       if(buff == '\n') //recebe um parágrafo
       {
@@ -104,7 +105,7 @@ int entradaGetToken(Entrada *in, char *token)
           buff = getc(in->entrada);
           nlCounter += 1;
         }
-        nlCounter += 4;
+        nlCounter += 2;
         return nlCounter; //casa o parágrafo
       }
       fseek(in->entrada, -1, SEEK_CUR);
