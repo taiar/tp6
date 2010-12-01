@@ -32,18 +32,27 @@ int main(int argc, char **argv)
   val = entradaGetToken(&entrada, palavra);
   while (val)
   {
-    if (val == 1) pal += 1;
+    if (val == 1)
+    {
+      printf("palavra (%s)\n", palavra);
+      pal += 1;
+    }
     else if (val == 2)
     {
+      printf("frase (%s)\n", palavra);
       pal += 1;
       frase += 1;
     }
     else if (val == 3)
+    {
+      printf("linha (%s)\n", palavra);
       nl += 1;
+    }
     else if (val > 3)
     {
+      printf("parag (%s)\n", palavra);
       parag += 1;
-      nl += val;
+      nl += val - 3;
     }
     val = entradaGetToken(&entrada, palavra);
   }

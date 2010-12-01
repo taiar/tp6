@@ -96,7 +96,6 @@ int entradaGetToken(Entrada *in, char *token)
     }
     if(estado == 2)
     {
-      printf("Oi manolos\n");
       buff = getc(in->entrada);
       if(buff == '\n') //recebe um parágrafo
       {
@@ -105,9 +104,12 @@ int entradaGetToken(Entrada *in, char *token)
           buff = getc(in->entrada);
           nlCounter += 1;
         }
-        nlCounter += 2;
+        nlCounter += 4;
+        fseek(in->entrada, -1, SEEK_CUR);
         return nlCounter; //casa o parágrafo
       }
+      if(buff == EOF)
+        return 0;
       fseek(in->entrada, -1, SEEK_CUR);
       return 3; //casa quebra de linha
     }
