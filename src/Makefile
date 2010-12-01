@@ -10,9 +10,12 @@ io: io.c io.h
 	
 stop: stopWords.c stopWords.h
 	$(CC) -c stopWords.c stopWords.h $(CFLAGS)
-	
-main: io stop
-	$(CC) -o $(BIN) tp6.c io.o stopWords.o $(CFLAGS)
+
+et1: etapa1.c etapa1.h
+	$(CC) -c etapa1.c etapa1.h $(CFLAGS)
+
+main: io stop et1
+	$(CC) -o $(BIN) tp6.c io.o stopWords.o etapa1.o $(CFLAGS)
 
 valgrind: clean main
 	valgrind ./$(BIN) $(XFLAGSA)

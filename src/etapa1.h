@@ -9,13 +9,12 @@
 #define ETAPA1_H_
 
 #include "stopWords.h"
+#include "io.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define ETAPA1_PARAGRAFO_SIZE 1024 * 10
-
-
+void etapa1(Entrada*, char**);
 
 #endif /* ETAPA1_H_ */

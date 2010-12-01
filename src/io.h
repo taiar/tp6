@@ -14,7 +14,7 @@ typedef struct
 {
   int iFlag, oFlag;
   char *i, *o;
-  FILE *entrada, *saida;
+  FILE *entrada, *saidaE1, *saidaE2, *saidaE3;
 } Entrada;
 
 /**

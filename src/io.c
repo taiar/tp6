@@ -9,13 +9,16 @@ void entradaInit(Entrada *entrada)
   entrada->o = NULL;
 
   entrada->entrada = NULL;
-  entrada->saida = NULL;
+  entrada->saidaE1 = NULL;
+  entrada->saidaE2 = NULL;
+  entrada->saidaE3 = NULL;
 }
 
 int entradaLe(int argc, char** argv, Entrada *entrada)
 {
   entradaInit(entrada);
   int c;
+  char nomeSaida[100];
   while ((c = getopt(argc, argv, "i:o:")) != -1)
   {
     switch (c)
@@ -44,10 +47,30 @@ int entradaLe(int argc, char** argv, Entrada *entrada)
     return 0;
   }
 
-  entrada->saida = fopen(entrada->o, "w");
-  if (!entrada->saida)
+  strcpy(nomeSaida, entrada->o);
+  strcat(nomeSaida, "1");
+  entrada->saidaE1 = fopen(nomeSaida, "w");
+  if (!entrada->saidaE1)
   {
-    printf("Não foi possível criar o arquivo de saída.\n");
+    printf("Não foi possível criar o arquivo de saida 1.\n");
+    return 0;
+  }
+
+  strcpy(nomeSaida, entrada->o);
+  strcat(nomeSaida, "2");
+  entrada->saidaE2 = fopen(nomeSaida, "w");
+  if (!entrada->saidaE2)
+  {
+    printf("Não foi possível criar o arquivo de saida 2.\n");
+    return 0;
+  }
+
+  strcpy(nomeSaida, entrada->o);
+  strcat(nomeSaida, "3");
+  entrada->saidaE3 = fopen(nomeSaida, "w");
+  if (!entrada->saidaE3)
+  {
+    printf("Não foi possível criar o arquivo de saida 3.\n");
     return 0;
   }
   return 1;
@@ -130,5 +153,7 @@ int entradaGetToken(Entrada *in, char *token)
 void entradaFree(Entrada *entrada)
 {
   fclose(entrada->entrada);
-  fclose(entrada->saida);
+  fclose(entrada->saidaE1);
+  fclose(entrada->saidaE2);
+  fclose(entrada->saidaE3);
 }
