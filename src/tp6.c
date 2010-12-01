@@ -57,7 +57,8 @@ int main(int argc, char **argv)
     val = entradaGetToken(&entrada, palavra);
   }
 
-  printf("Palavras: %d\nFrases: %d\nLinhas: %d\nParagrafos: %d\n", pal, frase, nl, parag);
+  printf("Palavras: %d\nFrases: %d\nLinhas: %d\nParagrafos: %d\n", pal, frase,
+      nl, parag);
 
   stopWordsFree(StopWords);
   entradaFree(&entrada);

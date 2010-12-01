@@ -29,6 +29,12 @@ int entradaLe(int, char**, Entrada*);
 
 /**
  * Traz "token" do arquivo lido de seguindo a lógica do texto.
+ * Retorna alguns sinais segundo o "token" que foi casado:
+ * 0 EOF
+ * 1 palavra
+ * 2 frase
+ * 3 linha
+ * 4 parágrafo
  */
 int entradaGetToken(Entrada*, char*);
 

@@ -63,43 +63,52 @@ int entradaGetToken(Entrada *in, char *token)
 
   while (buff != EOF)
   {
-    if(estado == 0)
+    if (estado == 0)
     {
-      if(isalnum(buff) || buff == '-') //recebe o primeiro caractere de palavra
-        estado = 1;
-      else if(buff == '\n') //recebe quebra de linha
-        estado = 2; //trata nova linha
-      else if(buff == EOF)
-        return 0; //casa fim do arquivo
+      //recebe o primeiro caractere de palavra
+      if (isalnum(buff) || buff == '-') estado = 1;
+
+      //recebe quebra de linha
+      else if (buff == '\n') estado = 2; //trata nova linha
+
+      else if (buff == EOF) return 0; //casa fim do arquivo
     }
-    if(estado == 1)
+    if (estado == 1)
     {
-      if(isalnum(buff) || buff == '-') //continua recebendo caracteres válidos
+      //continua recebendo caracteres válidos
+      if (isalnum(buff) || buff == '-')
       {
         token[count] = buff;
         count += 1;
         token[count] = '\0';
       }
-      else if(buff == ' ') //recebe espaço
-        return 1; //casa a palavra
-      else if(ispunct(buff)) //recebe pontuação
+
+      //recebe espaço
+      else if (buff == ' ') return 1; //casa a palavra
+
+      //recebe pontuação
+      else if (ispunct(buff))
       {
-        if(buff == ',') //não indica fim de frase
-          return 1; //casa a palavra
-        else
-          return 2; //casa a frase
+        if (buff == ',') //não indica fim de frase
+        return 1; //casa a palavra
+        else return 2; //casa a frase
       }
-      else if(buff == '\n') //recebe quebra de linha
-        estado = 2; //estado que analisa quebras de linha
-      else if(buff == EOF)
-        return 0; //casa fim do arquivo
+
+      //recebe quebra de linha
+      else if (buff == '\n') estado = 2; //estado que analisa quebras de linha
+
+      //casa fim do arquivo
+      else if (buff == EOF) return 0;
     }
-    if(estado == 2)
+
+    if (estado == 2)
     {
       buff = getc(in->entrada);
-      if(buff == '\n') //recebe um parágrafo
+
+      //recebe um parágrafo
+      if (buff == '\n')
       {
-        while(buff == '\n')
+        while (buff == '\n')
         {
           buff = getc(in->entrada);
           nlCounter += 1;
@@ -108,8 +117,8 @@ int entradaGetToken(Entrada *in, char *token)
         fseek(in->entrada, -1, SEEK_CUR);
         return nlCounter; //casa o parágrafo
       }
-      if(buff == EOF)
-        return 0;
+
+      if (buff == EOF) return 0;
       fseek(in->entrada, -1, SEEK_CUR);
       return 3; //casa quebra de linha
     }
