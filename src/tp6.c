@@ -12,8 +12,12 @@
 #include <sys/resource.h>
 
 #include "io.h"
+
 #include "stopWords.h"
+#include "expressoes.h"
+
 #include "etapa1.h"
+#include "etapa3.h"
 
 int main(int argc, char **argv)
 {
@@ -21,11 +25,15 @@ int main(int argc, char **argv)
   entradaInit(&entrada);
   if (!entradaLe(argc, argv, &entrada)) return EXIT_FAILURE;
   char **StopWords = stopWordsCarrega();
+  char **Expressoes = expressoesCarrega();
 
   etapa1(&entrada, StopWords);
   entradaResetaLeitura(&entrada);
 
+  etapa3(&entrada, Expressoes);
+
   stopWordsFree(StopWords);
+  expressoesFree(Expressoes);
   entradaFree(&entrada);
 
   return EXIT_SUCCESS;

@@ -1,586 +1,586 @@
-Redes de Sensores Sem Fio são redes basicamente projetadas para
+Redes de Sensores Sem Fio sao redes basicamente projetadas para
 monitorar e detectar eventos de interesse. Dois aspectos chaves
-desta tarefa são a identificação exata do tempo de ocorrência
-de um evento e, principalmente, a ordenação e o sequenciamento
-da ocorrência de diversos eventos na rede. Soluções atuais
-propõem diferentes algoritmos de sincronização de relógios dos
-nós sensores. Entretanto tais soluções requerem constantes
-execuções para manter a rede sincronizada, já que os relógios
-dos sensores rapidamente se dessincronizam (até 3 segundos por
-dia). Este trabalho propõe o algoritmo LiTE, uma nova
-abordagem, simples e eficiente, para localização temporal e
-ordenação de eventos em tais redes que não requer sincronização
-dos nós sensores. Experimentos práticos em laboratório com nós
+desta tarefa sao a identificacao exata do tempo de ocorrencia
+de um evento e, principalmente, a ordenacao e o sequenciamento
+da ocorrencia de diversos eventos na rede. Solucoes atuais
+propoem diferentes algoritmos de sincronizacao de relogios dos
+nos sensores. Entretanto tais solucoes requerem constantes
+execucoes para manter a rede sincronizada, ja que os relogios
+dos sensores rapidamente se dessincronizam (ate 3 segundos por
+dia). Este trabalho propoe o algoritmo LiTE, uma nova
+abordagem, simples e eficiente, para localizacao temporal e
+ordenacao de eventos em tais redes que nao requer sincronizacao
+dos nos sensores. Experimentos praticos em laboratorio com nos
 sensores reais comprovam a aplicabilidade do modelo e
-simulações extensivas mostram a escalabilidade e robustez da
-solução proposta.
+simulacoes extensivas mostram a escalabilidade e robustez da
+solucao proposta.
 
 
-Introdução
+Introducao
 
-Redes de Sensores Sem Fio (RSSFs) são compostas por nós
-sensores que cooperam entre si a fim de monitorar uma área de
+Redes de Sensores Sem Fio (RSSFs) sao compostas por nos
+sensores que cooperam entre si a fim de monitorar uma area de
 interesse comum. Esta tecnologia pode ser empregada nas mais
-diversas situações: monitoração de ambientes inóspitos,
-instalações médicas, urbanas, militares, industriais, etc. À
-medida em que ocorrem avanços tecnológicos nas áreas de
-sensores, nanotecnologia, circuitos integrados e comunicação
-sem fio, a utilização das RSSFs nas mais diversas aplicações se
-torna uma possibilidade revolucionária, por se tratar de uma
-ferramenta de coleta e processamento de informação, que tende a
-ser escalável e de baixo custo.
+diversas situacoes: monitoracao de ambientes inospitos,
+instalacoes medicas, urbanas, militares, industriais, etc. a
+medida em que ocorrem avancos tecnologicos nas areas de
+sensores, nanotecnologia, circuitos integrados e comunicacao
+sem fio, a utilizacao das RSSFs nas mais diversas aplicacoes se
+torna uma possibilidade revolucionaria, por se tratar de uma
+ferramenta de coleta e processamento de informacao, que tende a
+ser escalavel e de baixo custo.
 
-Tais RSSFs são redes voltadas basicamente à detecção e
-monitoração de eventos. Eventos possuem duas características
-principais: a primeira é qualitativa (critério causal), diz
-respeito à variável monitorada (e.g., temperatura,
-luminosidade, som, pressão); a segunda característica é
-referente à localização, tanto espacial quanto temporal
-(critério espaço-temporal), e indica quando e onde um evento
-ocorreu. Enquanto que o primeiro critério é facilmente
+Tais RSSFs sao redes voltadas basicamente a deteccao e
+monitoracao de eventos. Eventos possuem duas caracteristicas
+principais: a primeira e qualitativa (criterio causal), diz
+respeito a variavel monitorada (e.g., temperatura,
+luminosidade, som, pressao); a segunda caracteristica e
+referente a localizacao, tanto espacial quanto temporal
+(criterio espaco-temporal), e indica quando e onde um evento
+ocorreu. Enquanto que o primeiro criterio e facilmente
 identificado usando o dispositivo sensorial que o detectou, o
-critério espaço-temporal só pode ser identificado usando-se o
-posicionamento dos nós sensores e também, em geral, os seus
-relógios. Considerando que os nós sensores de uma RSSF são
-basicamente estáticos, o critério espacial, uma vez
+criterio espaco-temporal so pode ser identificado usando-se o
+posicionamento dos nos sensores e tambem, em geral, os seus
+relogios. Considerando que os nos sensores de uma RSSF sao
+basicamente estaticos, o criterio espacial, uma vez
 identificado, permanece o mesmo ao longo do tempo.
 
-Entretanto, manter os relógios dos nós sensores sincronizados é
+Entretanto, manter os relogios dos nos sensores sincronizados e
 um desafio muito grande uma vez que estes se dessincronizam a
-uma taxa de 40 \mu s/s . A essa taxa de dessincronização, os
-nós sensores precisarão ser sincronizados a cada 25s para
-manter uma sincronização na faixa dos milissegundos. Tendo em
-vista esta problemática, diversos trabalhos propõem algoritmos
-de sincronização leves e passíveis de serem executados
+uma taxa de 40 \mu s/s . A essa taxa de dessincronizacao, os
+nos sensores precisarao ser sincronizados a cada 25s para
+manter uma sincronizacao na faixa dos milissegundos. Tendo em
+vista esta problematica, diversos trabalhos propoem algoritmos
+de sincronizacao leves e passiveis de serem executados
 continuamente, dentre os quais podemos citar: Reference
 Broadcast Synchronization, Flooding Time Synchronization
 Protocol, Delay Measurement Time Synchronization e Post-Facto
 Synchronization.
 
 Neste trabalho, uma nova abordagem, simples e eficiente, para
-localização temporal e ordenação de eventos em RSSFs está sendo
+localizacao temporal e ordenacao de eventos em RSSFs esta sendo
 proposta. Nesta abordagem, implementada no algoritmo LiTE
-(Localização Temporal de Eventos), não se procura sincronizar
-os nós sensores entre si, mas sim sincronizar o evento com o
-relógio do nó sink, responsável por coletar e agregar todos os
-eventos da rede. Tal algoritmo se baseia no cálculo preciso dos
-atrasos dos pacotes enviados em múltiplos saltos a partir do nó
-que detectou o evento até o nó sink. Experimentos reais
-conduzidos em laboratório através de osciloscópios e nós
-sensores atestam a possibilidade do cálculo destes atrasos
-enquanto que simulações extensivas usando o simulador NS-2
-demonstram a escalabilidade, a eficiência e a robustez da
-solução proposta.
+(Localizacao Temporal de Eventos), nao se procura sincronizar
+os nos sensores entre si, mas sim sincronizar o evento com o
+relogio do no sink, responsavel por coletar e agregar todos os
+eventos da rede. Tal algoritmo se baseia no calculo preciso dos
+atrasos dos pacotes enviados em multiplos saltos a partir do no
+que detectou o evento ate o no sink. Experimentos reais
+conduzidos em laboratorio atraves de osciloscopios e nos
+sensores atestam a possibilidade do calculo destes atrasos
+enquanto que simulacoes extensivas usando o simulador NS-2
+demonstram a escalabilidade, a eficiencia e a robustez da
+solucao proposta.
 
-O restante deste trabalho está organizado como segue. Soluções
-atuais encontradas na literatura são discutidas na seção 2. Na
-seção 3, são introduzidos alguns conceitos relevantes à
-compreensão deste trabalho. Em seguida, na seção 4, é
-apresentado o algoritmo proposto, o LiTE. Na seção 5, são
-feitas avaliações de aplicabilidade e de desempenho. Na seção
-6, alguns aspectos sobre a aplicabilidade e possível
-substituição dos algoritmos atuais pelo proposto neste trabalho
-são discutidos. Por último, na seção 6, são apresentadas
-conclusões relativas aos resultados obtidos e possíveis
-aspectos que deverão ser tratados em trabalhos futuros.
+O restante deste trabalho esta organizado como segue. Solucoes
+atuais encontradas na literatura sao discutidas na secao 2. Na
+secao 3, sao introduzidos alguns conceitos relevantes a
+compreensao deste trabalho. Em seguida, na secao 4, e
+apresentado o algoritmo proposto, o LiTE. Na secao 5, sao
+feitas avaliacoes de aplicabilidade e de desempenho. Na secao
+6, alguns aspectos sobre a aplicabilidade e possivel
+substituicao dos algoritmos atuais pelo proposto neste trabalho
+sao discutidos. Por ultimo, na secao 6, sao apresentadas
+conclusoes relativas aos resultados obtidos e possiveis
+aspectos que deverao ser tratados em trabalhos futuros.
 
 
 Trabalhos Relacionados
 
-O Reference Broadcast Protocol (RBS) é um protocolo de
-sincronização que utiliza um broadcast de referência, o qual é
-originado a partir de nós especiais (beacons) que possuem o
-tempo de "referência". Os nós beacons realizam o broadcast de
-referência e, em seguida, seus nós vizinhos fazem um broadcast
+O Reference Broadcast Protocol (RBS) e um protocolo de
+sincronizacao que utiliza um broadcast de referencia, o qual e
+originado a partir de nos especiais (beacons) que possuem o
+tempo de "referencia". Os nos beacons realizam o broadcast de
+referencia e, em seguida, seus nos vizinhos fazem um broadcast
 informando o tempo de recebimento deste pacote, possibilitando
-a criação de uma tabela com os atrasos (offsets) relativos à
+a criacao de uma tabela com os atrasos (offsets) relativos a
 cada vizinho. Este algoritmo apresenta a vantagem de eliminar
-muitas fontes de erro no processo de sincronização. Entretanto,
-seu custo computacional é elevado se comparado com as demais
-soluções -- O(2n) , onde n é a quantidade de nós na rede.
+muitas fontes de erro no processo de sincronizacao. Entretanto,
+seu custo computacional e elevado se comparado com as demais
+solucoes -- O(2n) , onde n e a quantidade de nos na rede.
 
 No protocolo Flooding Time Synchronization Protocol (FTSP), o
-nó sink (que possui o tempo de referência) faz um broadcast
-dando inicio ao flooding na rede. Os demais nós, ao receberem
+no sink (que possui o tempo de referencia) faz um broadcast
+dando inicio ao flooding na rede. Os demais nos, ao receberem
 esse pacote, fazem um timestamp na camada MAC (Media Access
-Control), calculam os atrasos do tempo de transmissão em
-relação ao sink, e repassam o pacote com as devidas correções,
-dando continuidade ao flooding. Ao final, todos os nós
-alcançáveis da rede terão realizado um broadcast e toda a rede
-estará sincronizada com uma determinada precisão, independente
-do número de saltos em relação ao sink. O custo de comunicação
-do FTSP é de um pacote enviado por cada nó da rede -- O(n) .
+Control), calculam os atrasos do tempo de transmissao em
+relacao ao sink, e repassam o pacote com as devidas correcoes,
+dando continuidade ao flooding. Ao final, todos os nos
+alcancaveis da rede terao realizado um broadcast e toda a rede
+estara sincronizada com uma determinada precisao, independente
+do numero de saltos em relacao ao sink. O custo de comunicacao
+do FTSP e de um pacote enviado por cada no da rede -- O(n) .
 
 O Delay Measurement Time Synchronization (DMTS) pode ser
-utilizado para sincronização local (assim como o RBS), ou
-global (como o FTSP). A sincronização local ocorre como segue.
-Em uma determinada região é eleito um nó líder (referência), o
-qual faz um broadcast com o seu tempo. Ao contrário do RBS, os
-vizinhos não trocam pacotes entre si. Eles se sincronizam com o
-tempo do líder, calculando o atraso de transmissão do pacote
-(detalhado na seção abaixo). A sincronização por múltiplos
-saltos funciona da mesma forma, porém após cada vizinho se
+utilizado para sincronizacao local (assim como o RBS), ou
+global (como o FTSP). A sincronizacao local ocorre como segue.
+Em uma determinada regiao e eleito um no lider (referencia), o
+qual faz um broadcast com o seu tempo. Ao contrario do RBS, os
+vizinhos nao trocam pacotes entre si. Eles se sincronizam com o
+tempo do lider, calculando o atraso de transmissao do pacote
+(detalhado na secao abaixo). A sincronizacao por multiplos
+saltos funciona da mesma forma, porem apos cada vizinho se
 sincronizar, ele deve realizar um broadcast contendo o seu
 tempo sincronizado, ou seja, funciona como um algoritmo de
-inundação (flooding) com custo O(n) . Existe uma forte
-semelhança entre o DMTS e o FTSP, mas o que os difere é
+inundacao (flooding) com custo O(n) . Existe uma forte
+semelhanca entre o DMTS e o FTSP, mas o que os difere e
 basicamente a forma de calcular o atraso.
 
-O algoritmo Post-Facto Synchronization é um algoritmo de
-sincronização instantânea voltada especificamente para eventos.
-Assim como o RBS é necessário que hajam nós de referência
-espalhados ao longo da rede. No entanto, esses nós beacons só
-realizam o broadcast de referência caso algum vizinho detecte
-um evento e solicite o tempo real. Desta forma há uma ordenação
-precisa dos eventos, porém se vários eventos são detectados
-praticamente todo o tempo, várias solicitações de sincronização
-serão realizadas.
+O algoritmo Post-Facto Synchronization e um algoritmo de
+sincronizacao instantanea voltada especificamente para eventos.
+Assim como o RBS e necessario que hajam nos de referencia
+espalhados ao longo da rede. No entanto, esses nos beacons so
+realizam o broadcast de referencia caso algum vizinho detecte
+um evento e solicite o tempo real. Desta forma ha uma ordenacao
+precisa dos eventos, porem se varios eventos sao detectados
+praticamente todo o tempo, varias solicitacoes de sincronizacao
+serao realizadas.
 
 Como pode-se observar, existem diferentes propostas buscando
-soluções cada vez mais eficientes na área de sincronização.
-Embora existam diversas vantagens na utilização de algoritmos
-de sincronização, é importante destacar que isto implica em
-consumo extra de energia da rede, que é escassa em RSSFs.
-Considerando que em nós sensores Mica2 há uma taxa de
-dessincronização de 40 \mu s/s , isso acarretará em uma
-dessincronização de aproximadamente 3,5s por dia e a rede
-precisará ser ressincronizada frequentemente, o que resulta em
+solucoes cada vez mais eficientes na area de sincronizacao.
+Embora existam diversas vantagens na utilizacao de algoritmos
+de sincronizacao, e importante destacar que isto implica em
+consumo extra de energia da rede, que e escassa em RSSFs.
+Considerando que em nos sensores Mica2 ha uma taxa de
+dessincronizacao de 40 \mu s/s , isso acarretara em uma
+dessincronizacao de aproximadamente 3,5s por dia e a rede
+precisara ser ressincronizada frequentemente, o que resulta em
 mais consumo de energia. Neste trabalho, uma nova abordagem
-está sendo proposta: não se preocupar com a sincronização dos
-nós sensores, mas sim dos eventos. Nesta abordagem, nenhum
-pacote será trocado para sincronizar nós com relação a alguma
-referência. Além disso, a sincronização do evento é realizada
-com o próprio pacote que o nó sensor envia ao sink informando a
-respeito da ocorrência do evento, o que gera uma solução com
-custo de comunicação praticamente nulo.
+esta sendo proposta: nao se preocupar com a sincronizacao dos
+nos sensores, mas sim dos eventos. Nesta abordagem, nenhum
+pacote sera trocado para sincronizar nos com relacao a alguma
+referencia. Alem disso, a sincronizacao do evento e realizada
+com o proprio pacote que o no sensor envia ao sink informando a
+respeito da ocorrencia do evento, o que gera uma solucao com
+custo de comunicacao praticamente nulo.
 
-Definição do Problema
+Definicao do Problema
 
 Rede de Sensores Sem Fio. Uma RSSF pode ser representada
 formalmente como um grafo Euclidiano G=(V,E) como segue:
 
-- V = \{v_{0},v_{1},\ldots, v_{n-1}\} é o conjunto de nós
-sensores (vértices do grafo), sendo que v_{0} é o nó sink;
+- V = \{v_{0},v_{1},\ldots, v_{n-1}\} e o conjunto de nos
+sensores (vertices do grafo), sendo que v_{0} e o no sink;
 
-- \forall v_i \in V , r é o raio de comunicação de v_i ;
+- \forall v_i \in V , r e o raio de comunicacao de v_i ;
 
-- Q = [0,x] \times [0,y] \times [0,z] a região de sensoriamento
-em três dimensões;
+- Q = [0,x] \times [0,y] \times [0,z] a regiao de sensoriamento
+em tres dimensoes;
 
-- \edge{i,j} \in {E} se, e somente se, a distância entre v_i e
- v_j  for menor que  r , i.e.,  v_i  alcança  v_j  e
+- \edge{i,j} \in {E} se, e somente se, a distancia entre v_i e
+ v_j  for menor que  r , i.e.,  v_i  alcanca  v_j  e
 vice-versa;
 
-- t é o tempo global da rede; pode ser baseado no UTC
+- t e o tempo global da rede; pode ser baseado no UTC
 (Coordinated Universal Time, e.g., GPS) ou em um tempo relativo
-(e.g., do nó sink).
+(e.g., do no sink).
 
-- \forall v_i \in V , t_i(t) é o tempo local em que v_i se
+- \forall v_i \in V , t_i(t) e o tempo local em que v_i se
 encontra no instante t .
 
-Conforme mencionado, redes de sensores são basicamente voltadas
-à monitoração, detecção e notificação de eventos.
+Conforme mencionado, redes de sensores sao basicamente voltadas
+a monitoracao, deteccao e notificacao de eventos.
 
-Eventos e Histórico Local e Global de Eventos. Um evento pode
+Eventos e Historico Local e Global de Eventos. Um evento pode
 ser definido como "algo que acontece em um dado lugar e tempo"
-ou "um fenômeno localizado em um único ponto do espaço-tempo".
+ou "um fenomeno localizado em um unico ponto do espaco-tempo".
 Do ponto de vista temporal em RSSFs, um evento pode ser
-detectado por um ou mais nós e pode ser definido como:
+detectado por um ou mais nos e pode ser definido como:
 
-- e^t_i é o evento e sendo detectado pelo nó v_i no seu tempo
+- e^t_i e o evento e sendo detectado pelo no v_i no seu tempo
 local t_i ;
 
-- h_i = \{e^{t_1}_i, e^{t_2}_i, \ldots\} é o histórico ordenado
-de eventos do nó v_i ;
+- h_i = \{e^{t_1}_i, e^{t_2}_i, \ldots\} e o historico ordenado
+de eventos do no v_i ;
 
-- \{h_1 \cup h_2 \ldots \cup h_n\} \leadsto H é o histórico
+- \{h_1 \cup h_2 \ldots \cup h_n\} \leadsto H e o historico
 global de eventos ordenado pelo tempo global t ;
 
-Em RSSFs, o histórico local pode ser facilmente calculado
-ordenando-se os eventos detectados usando os relógios locais
-dos nós sensores. Entretanto, para que esta informação seja
-útil, ela precisa ser convertida em um histórico global que é o
-histórico de todos os eventos da rede que, neste trabalho, é a
-definição de ordenação de eventos (figura abaixo):
+Em RSSFs, o historico local pode ser facilmente calculado
+ordenando-se os eventos detectados usando os relogios locais
+dos nos sensores. Entretanto, para que esta informacao seja
+util, ela precisa ser convertida em um historico global que e o
+historico de todos os eventos da rede que, neste trabalho, e a
+definicao de ordenacao de eventos (figura abaixo):
 
-Ordenação de Eventos. Conversão de \{h_1 \cup h_2 \ldots \cup
+Ordenacao de Eventos. Conversao de \{h_1 \cup h_2 \ldots \cup
 h_n\} em H .
 
-Uma solução para este problema de ordenação de eventos é manter
-todos os nós da RSSF sincronizados com o tempo global t :
+Uma solucao para este problema de ordenacao de eventos e manter
+todos os nos da RSSF sincronizados com o tempo global t :
 
-Sincronização de Nós e Erro de Sincronização. \forall v_i \in V
+Sincronizacao de Nos e Erro de Sincronizacao. \forall v_i \in V
 atualizar t_i(t) \approx t . Diga-se aproximado, pois nenhum
-algoritmo de sincronização é perfeito por se basearem em
-técnicas que geram erros. O erro de sincronização de um nó i é
+algoritmo de sincronizacao e perfeito por se basearem em
+tecnicas que geram erros. O erro de sincronizacao de um no i e
 definido como t_i(t) - t .
 
-Quando os nós sensores estão com seus relógios sincronizados,
- H  é facilmente gerado ordenando-se os eventos por seus tempos
-locais t_i (que são aproximações do tempo global t ). Em RSSFs,
-por seus protocolos serem baseados em múltiplos saltos, uma das
-técnicas comumente utilizadas em sincronização é a estimativa
+Quando os nos sensores estao com seus relogios sincronizados,
+ H  e facilmente gerado ordenando-se os eventos por seus tempos
+locais t_i (que sao aproximacoes do tempo global t ). Em RSSFs,
+por seus protocolos serem baseados em multiplos saltos, uma das
+tecnicas comumente utilizadas em sincronizacao e a estimativa
 de atraso de um pacote em um salto (figura abaixo).
 
 Estimativa de Atraso de um Salto ( a^p_{ij} ). Estimativa de
 atraso (delay measurement consiste em calcular, ou estimar,
-todos os possíveis atrasos existentes durante a transferência
-de um pacote p , em um único salto, do nó transmissor i para o
-nó receptor j : a^p_{ij} = a^p_{env} + a^p_{mac} + a^p_{trans}
+todos os possiveis atrasos existentes durante a transferencia
+de um pacote p , em um unico salto, do no transmissor i para o
+no receptor j : a^p_{ij} = a^p_{env} + a^p_{mac} + a^p_{trans}
 + a^p_{prop} + a^p_{cheg} + a^p_{recep} , onde:
 
-- a^p_{env} é o atraso de envio; onde ocorre a montagem da
-mensagem, e cabeçalho. Este atraso é variável e
-não-determinístico pois o processo de envio concorre com outros
-processos e é dependente do sistema operacional;
+- a^p_{env} e o atraso de envio; onde ocorre a montagem da
+mensagem, e cabecalho. Este atraso e variavel e
+nao-deterministico pois o processo de envio concorre com outros
+processos e e dependente do sistema operacional;
 
-- a^p_{mac} é o atraso da camada MAC; está diretamente
-relacionado ao estado do canal, ou seja, neste momento o nó
-está disputando com os demais sensores um momento para enviar
+- a^p_{mac} e o atraso da camada MAC; esta diretamente
+relacionado ao estado do canal, ou seja, neste momento o no
+esta disputando com os demais sensores um momento para enviar
 seu pacote;
 
-- a^p_{trans} é o atraso de transmissão; é determinístico, pois
-está relacionado ao tempo decorrido durante a transmissão bit a
+- a^p_{trans} e o atraso de transmissao; e deterministico, pois
+esta relacionado ao tempo decorrido durante a transmissao bit a
 bit do pacote, dependendo principalmente do tamanho do pacote;
 
-- a^p_{prop} é o atraso de propagação; dado que a velocidade de
-propagação de uma onda eletromagnética é de aproximadamente 3
-\times 10^8 m/s , basta relacionar essa velocidade com o espaço
+- a^p_{prop} e o atraso de propagacao; dado que a velocidade de
+propagacao de uma onda eletromagnetica e de aproximadamente 3
+\times 10^8 m/s , basta relacionar essa velocidade com o espaco
 percorrido;
 
-- a^p_{cheg} é o atraso de chegada; tempo de recebimento do
-pacote completo; determinístico e depende do tamanho do pacote;
+- a^p_{cheg} e o atraso de chegada; tempo de recebimento do
+pacote completo; deterministico e depende do tamanho do pacote;
 
-- a^p_{recep} é o atraso de recepção; tempo decorrido durante a
-montagem do pacote e interrupção do sistema operacional; este
-tempo varia depende do SO, portanto é um tempo não
-determinístico.
+- a^p_{recep} e o atraso de recepcao; tempo decorrido durante a
+montagem do pacote e interrupcao do sistema operacional; este
+tempo varia depende do SO, portanto e um tempo nao
+deterministico.
 
-Localização Temporal de Eventos
+Localizacao Temporal de Eventos
 
-Nesta seção, é apresentado um novo algoritmo para sincronização
-e ordenação de eventos em RSSFs: o Localização Temporal de
+Nesta secao, e apresentado um novo algoritmo para sincronizacao
+e ordenacao de eventos em RSSFs: o Localizacao Temporal de
 Eventos).
 
 Atraso de Roteamento do Pacote ( A^p_{ij} ). Tempo total que o
-pacote p levou para deixar o nó v_i e chegar, em múltiplos
-saltos, ao nó {v_j} (em geral, o nó sink). Esse cálculo é
-possível somando-se todos os atrasos e todos os tempos de
-processamento dos nós intermediários (i.e., que repassaram o
-pacote) até o momento que este atingiu o nó de destino,
+pacote p levou para deixar o no v_i e chegar, em multiplos
+saltos, ao no {v_j} (em geral, o no sink). Esse calculo e
+possivel somando-se todos os atrasos e todos os tempos de
+processamento dos nos intermediarios (i.e., que repassaram o
+pacote) ate o momento que este atingiu o no de destino,
 conforme ilustrado na figura abaixo. Logo, A^p_{ij} = a^p_{ik}
-+ \ldots + a^p_{lj} , onde \{v_k, \ldots, v_l\} são nós
-intermediários que repassaram o pacote.
++ \ldots + a^p_{lj} , onde \{v_k, \ldots, v_l\} sao nos
+intermediarios que repassaram o pacote.
 
 O atraso de roteamento pode ser calculado usando qualquer
 protocolo de roteamento, uma vez que qualquer atraso
-introduzido pelo roteamento será calculado nesta fase do
-algoritmo LiTE. É importante ressaltar que tanto o processo de
-cálculo de atraso dos saltos quanto o de roteamento não
-requerem sincronização de relógios entre os nós sensores.
+introduzido pelo roteamento sera calculado nesta fase do
+algoritmo LiTE. e importante ressaltar que tanto o processo de
+calculo de atraso dos saltos quanto o de roteamento nao
+requerem sincronizacao de relogios entre os nos sensores.
 
 O algoritmo descreve o funcionamento do algoritmo LiTE proposto
-neste trabalho. O algoritmo é simples e eficiente, e não requer
-nenhuma configuração inicial (i.e., troca de mensagens para sua
-configuração). Neste algoritmo, quando um determinado nó sensor
-detecta um evento, este irá registrar o tempo local de detecção
-do evento e, em seguida, irá solicitar ao protocolo de
-roteamento o próximo salto do pacote. Como este último passo
+neste trabalho. O algoritmo e simples e eficiente, e nao requer
+nenhuma configuracao inicial (i.e., troca de mensagens para sua
+configuracao). Neste algoritmo, quando um determinado no sensor
+detecta um evento, este ira registrar o tempo local de deteccao
+do evento e, em seguida, ira solicitar ao protocolo de
+roteamento o proximo salto do pacote. Como este ultimo passo
 pode demorar dependendo do protocolo de roteamento (reativo,
-pró-ativo, híbrido), o atraso de roteamento é atualizado com
-este tempo de processamento local. Em seguida, o nó encaminhará
-o pacote com o registro do evento para o próximo nó sensor em
-direção ao sink.
+pro-ativo, hibrido), o atraso de roteamento e atualizado com
+este tempo de processamento local. Em seguida, o no encaminhara
+o pacote com o registro do evento para o proximo no sensor em
+direcao ao sink.
 
-Cada nó sensor intermediário irá calcular o atraso do salto ao
+Cada no sensor intermediario ira calcular o atraso do salto ao
 receber o pacote, registrar o tempo de recebimento do pacote e
-calcular o próximo salto do pacote. Em seguida, o nó
-intermediário irá acrescentar ao atraso de roteamento do pacote
+calcular o proximo salto do pacote. Em seguida, o no
+intermediario ira acrescentar ao atraso de roteamento do pacote
 o seu atraso de salto mais o seu tempo de processamento e, por
-último, encaminhar o pacote para o próximo salto. Quando o
-pacote chegar ao nó sink, este irá também calcular o atraso do
-salto e acrescentá-lo ao atraso de roteamento. Por último, o nó
-sink irá calcular o tempo real de ocorrência do evento como
-sendo o tempo atual subtraído do atraso do pacote e, então,
-registrar o evento em sua ordem correta no histórico global de
+ultimo, encaminhar o pacote para o proximo salto. Quando o
+pacote chegar ao no sink, este ira tambem calcular o atraso do
+salto e acrescenta-lo ao atraso de roteamento. Por ultimo, o no
+sink ira calcular o tempo real de ocorrencia do evento como
+sendo o tempo atual subtraido do atraso do pacote e, entao,
+registrar o evento em sua ordem correta no historico global de
 eventos.
 
-A implementação do cálculo de atraso de um salto pode ser
-realizada apenas na camada de aplicação ou pode tirar proveito
-de informações de tempo introduzidas na camada MAC. Para isso,
-duas variações do LiTE foram implementadas: o LiTE-Apl,
-implementado apenas na camada de aplicação (conforme o
+A implementacao do calculo de atraso de um salto pode ser
+realizada apenas na camada de aplicacao ou pode tirar proveito
+de informacoes de tempo introduzidas na camada MAC. Para isso,
+duas variacoes do LiTE foram implementadas: o LiTE-Apl,
+implementado apenas na camada de aplicacao (conforme o
 algoritmo apresentado), e o LiTE-Mac, implementado
-introduzindo-se marcações de tempo na camada MAC.
+introduzindo-se marcacoes de tempo na camada MAC.
 
-No LiTE-Mac, um código é introduzido logo após o nó sensor
+No LiTE-Mac, um codigo e introduzido logo apos o no sensor
 obter acesso livre ao meio e logo antes do pacote ir para o
-driver de rede para ser enviado (antes da camada física). Esse
-código obtém o atraso da camada de aplicação até o momento de
+driver de rede para ser enviado (antes da camada fisica). Esse
+codigo obtem o atraso da camada de aplicacao ate o momento de
 acesso livre ao meio e adiciona esse atraso ao atraso de
-roteamento. Outro código no nó receptor é responsável por
-armazenar uma marcação de tempo no instante em que o driver de
-rede começa a receber o pacote. Essa marcação de tempo, junto
-com o tempo de recebimento na aplicação, será adicionado ao
-atraso de roteamento. Nesta versão do LiTE, grande parte dos
-tempos não determinísticos de envio e recepção de pacotes podem
-ser eliminados, gerando um cálculo de atraso mais preciso.
+roteamento. Outro codigo no no receptor e responsavel por
+armazenar uma marcacao de tempo no instante em que o driver de
+rede comeca a receber o pacote. Essa marcacao de tempo, junto
+com o tempo de recebimento na aplicacao, sera adicionado ao
+atraso de roteamento. Nesta versao do LiTE, grande parte dos
+tempos nao deterministicos de envio e recepcao de pacotes podem
+ser eliminados, gerando um calculo de atraso mais preciso.
 
-Avaliação de Desempenho
+Avaliacao de Desempenho
 
-Nesta seção, o desempenho do algoritmo LiTE será avaliado sob
-três aspectos: aplicabilidade, escalabilidade e robustez. O
-primeiro aspecto, experimentado em nós sensores reais, avalia a
-técnica de cálculo de atraso de um salto e é apresentado na
-seção a seguir.
+Nesta secao, o desempenho do algoritmo LiTE sera avaliado sob
+tres aspectos: aplicabilidade, escalabilidade e robustez. O
+primeiro aspecto, experimentado em nos sensores reais, avalia a
+tecnica de calculo de atraso de um salto e e apresentado na
+secao a seguir.
 
-Experimentos em Nós Sensores.
+Experimentos em Nos Sensores.
 
-O objetivo destes experimentos é analisar o impacto dos erros
-não determinísticos na técnica de cálculo de atrasos quando
-implementada em nós sensores reais, mais especificamente, nos
-nós sensores SunSPOT. Apesar de experimentos similares terem
-sido aplicados em outros trabalhos, este é o primeiro a
-experimentar tal técnica em sensores SunSPOT e o primeiro a
-comparar dados obtidos tanto na camada MAC quanto de Aplicação.
-Além disso, como será mostrado a seguir, resultados diferentes
-foram obtidos por tal técnica quando implementada nestes nós
+O objetivo destes experimentos e analisar o impacto dos erros
+nao deterministicos na tecnica de calculo de atrasos quando
+implementada em nos sensores reais, mais especificamente, nos
+nos sensores SunSPOT. Apesar de experimentos similares terem
+sido aplicados em outros trabalhos, este e o primeiro a
+experimentar tal tecnica em sensores SunSPOT e o primeiro a
+comparar dados obtidos tanto na camada MAC quanto de Aplicacao.
+Alem disso, como sera mostrado a seguir, resultados diferentes
+foram obtidos por tal tecnica quando implementada nestes nos
 sensores.
 
 Metodologia
 
-Para calcular o tempo de envio e recepção de um pacote e, mais
-importante, calcular a variação deste tempo (tempos não
-determinísticos), um relógio externo, com tempo global, foi
-necessário. Para isso, dois nós sensores, um transmissor e um
-receptor, foram conectados a um osciloscópio de alta precisão
-(MS06032A, Agilent Technologies, com precisão de 25 \mu s ).
-Pacotes iguais com tamanho de 52 bytes são então enviados pelo
-transmissor. Na camada de aplicação antes de solicitar o envio
-do pacote, o sinal da saída digital D0 sobe para nível lógico 1
-(marcação Apl_1 da figura), permanecendo assim até que todas as
-verificações da disponibilidade do meio sejam feitas e,
+Para calcular o tempo de envio e recepcao de um pacote e, mais
+importante, calcular a variacao deste tempo (tempos nao
+deterministicos), um relogio externo, com tempo global, foi
+necessario. Para isso, dois nos sensores, um transmissor e um
+receptor, foram conectados a um osciloscopio de alta precisao
+(MS06032A, Agilent Technologies, com precisao de 25 \mu s ).
+Pacotes iguais com tamanho de 52 bytes sao entao enviados pelo
+transmissor. Na camada de aplicacao antes de solicitar o envio
+do pacote, o sinal da saida digital D0 sobe para nivel logico 1
+(marcacao Apl_1 da figura), permanecendo assim ate que todas as
+verificacoes da disponibilidade do meio sejam feitas e,
 finalmente, o pacote esteja pronto para ser enviado, tornando
-ao nível lógico inicial 0 (marcação Mac_1). Após a chegada do
-pacote no receptor (atraso de chegada), o nível lógico da saída
-digital D0 deste nó sobe para 1 (marcação Mac_2) permanecendo
-assim até que, na aplicação, após a finalização do processo de
-recebimento do pacote, o nível volte ao seu valor inicial 0
-(marcação Apl_2). Para cada pacote enviado e recebido, pode-se
-calcular o tempo de um salto tanto na camada de aplicação
+ao nivel logico inicial 0 (marcacao Mac_1). Apos a chegada do
+pacote no receptor (atraso de chegada), o nivel logico da saida
+digital D0 deste no sobe para 1 (marcacao Mac_2) permanecendo
+assim ate que, na aplicacao, apos a finalizacao do processo de
+recebimento do pacote, o nivel volte ao seu valor inicial 0
+(marcacao Apl_2). Para cada pacote enviado e recebido, pode-se
+calcular o tempo de um salto tanto na camada de aplicacao
 (atrasoApl = Apl_2 - Apl_1) quanto de acesso ao meio (atrasoMac
 = Mac_2 - Mac_1).
 
-É importante notar que, neste experimento, não se procura
+e importante notar que, neste experimento, nao se procura
 calcular todos os atrasos do pacote, mas sim identificar
-atrasos não-determinísticos, ou seja, os que variam
+atrasos nao-deterministicos, ou seja, os que variam
 inesperadamente de um pacote para outro, uma vez que tais
-atrasos não determinísticos são os responsáveis pela imprecisão
-da técnica.
+atrasos nao deterministicos sao os responsaveis pela imprecisao
+da tecnica.
 
 
-Análise dos Resultados
+Analise dos Resultados
 
-Os gráficos da figura abaixo ilustram os atrasos obtidos por
+Os graficos da figura abaixo ilustram os atrasos obtidos por
 diversos pacotes em um salto. Como pode-se observar na figura,
-mesmo sem concorrência de acesso ao meio, ainda assim alguns
-pacotes obtiveram atrasos bem maiores do que a média, indicando
-uma variação grande dos atrasos quando esta técnica é
-implementada na camada de aplicação. As figuras ilustram os
-atrasos obtidos na camada MAC, sendo que esta última com uma
-visão mais detalhada. Como pode ser observado, tais atrasos
-variam cerca de 1 ms}, principalmente abaixo da média.
+mesmo sem concorrencia de acesso ao meio, ainda assim alguns
+pacotes obtiveram atrasos bem maiores do que a media, indicando
+uma variacao grande dos atrasos quando esta tecnica e
+implementada na camada de aplicacao. As figuras ilustram os
+atrasos obtidos na camada MAC, sendo que esta ultima com uma
+visao mais detalhada. Como pode ser observado, tais atrasos
+variam cerca de 1 ms}, principalmente abaixo da media.
 
-Nas figuras abaixo, são mostrados os histogramas de densidade
-dos atrasos na camada de aplicação e MAC, respectivamente.
-Observando os gráficos, pode-se notar que, nestes sensores
-SunSPOT, os atrasos não seguem uma distribuição Gaussiana,
+Nas figuras abaixo, sao mostrados os histogramas de densidade
+dos atrasos na camada de aplicacao e MAC, respectivamente.
+Observando os graficos, pode-se notar que, nestes sensores
+SunSPOT, os atrasos nao seguem uma distribuicao Gaussiana,
 conforme considerado por grande parte dos trabalhos que simulam
-algoritmos de sincronização. Isso é uma observação muito
-importante, pois a utilização de modelos errados pode gerar
-conclusões incorretas a respeito da eficiência dos algoritmos
-propostos. Para confirmar tal observação, os gráficos
+algoritmos de sincronizacao. Isso e uma observacao muito
+importante, pois a utilizacao de modelos errados pode gerar
+conclusoes incorretas a respeito da eficiencia dos algoritmos
+propostos. Para confirmar tal observacao, os graficos
 quantil-quantil da figura abaixo comparam os quantis amostrais
-com os teóricos, indicando mais uma vez a não-normalidade dos
-dados pois vários pontos não estão próximos à reta de mínimos
+com os teoricos, indicando mais uma vez a nao-normalidade dos
+dados pois varios pontos nao estao proximos a reta de minimos
 quadrados plotada.
 
-Os gráficos Q-Q, apesar de serem bastante poderosos para
-verificar desvios de normalidade, não constituem um teste
-formal, servindo apenas como uma análise exploratória dos
-dados. Testes de adequação formais, tais como o Chi-quadrado e
-Kolmogorov-Smirnov, permitem uma análise mais profunda da
-questão. Desta forma, tais testes foram aplicados para um nível
-de confiança de 95% nos dados obtidos na camada de aplicação e
+Os graficos Q-Q, apesar de serem bastante poderosos para
+verificar desvios de normalidade, nao constituem um teste
+formal, servindo apenas como uma analise exploratoria dos
+dados. Testes de adequacao formais, tais como o Chi-quadrado e
+Kolmogorov-Smirnov, permitem uma analise mais profunda da
+questao. Desta forma, tais testes foram aplicados para um nivel
+de confianca de 95% nos dados obtidos na camada de aplicacao e
 na camada MAC e obtiveram valor de prova p - value < 0.01 para
-ambos os testes. Esse p - value é a medida do grau de
-concordância entre os dados e a hipótese nula (no caso, que a
-distribuição de probabilidade dos dados é normal). Quanto menor
-o p - value, menor é essa probabilidade. Uma regra prática de
-decisão é rejeitar a hipótese nula se p - value <= alpha, onde
-alpha é a taxa de erro. Como está-se procurando uma margem de
-confiança de 95%, então, alpha = 1 - 0.95 = 0.05. Logo, com
-base nos testes aplicados com os dados coletados nas medições,
-pode-se rejeitar a hipótese de normalidade.
+ambos os testes. Esse p - value e a medida do grau de
+concordancia entre os dados e a hipotese nula (no caso, que a
+distribuicao de probabilidade dos dados e normal). Quanto menor
+o p - value, menor e essa probabilidade. Uma regra pratica de
+decisao e rejeitar a hipotese nula se p - value <= alpha, onde
+alpha e a taxa de erro. Como esta-se procurando uma margem de
+confianca de 95%, entao, alpha = 1 - 0.95 = 0.05. Logo, com
+base nos testes aplicados com os dados coletados nas medicoes,
+pode-se rejeitar a hipotese de normalidade.
 
 Do ponto de vista de aplicabilidade, pode-se observar pelos
-gráficos mostrados que os atrasos não determinísticos geram um
+graficos mostrados que os atrasos nao deterministicos geram um
 erro de aproximadamente 1 ms ao ser utilizar a camada MAC e um
-erro de aproximadamente 5 ms na camada de aplicação. Uma vez
-que observa-se pouca variação nos atrasos, pode-se concluir que
-a técnica é passível de ser implementada em nós sensores reais
-e, mais especificamente, nos nós sensores SunSPOT.
+erro de aproximadamente 5 ms na camada de aplicacao. Uma vez
+que observa-se pouca variacao nos atrasos, pode-se concluir que
+a tecnica e passivel de ser implementada em nos sensores reais
+e, mais especificamente, nos nos sensores SunSPOT.
 
 Experimentos de Escalabilidade e Robustez
 
-O objetivo destes experimentos é avaliar o comportamento do
-algoritmo quando executado em múltiplos saltos em uma RSSF.
+O objetivo destes experimentos e avaliar o comportamento do
+algoritmo quando executado em multiplos saltos em uma RSSF.
 
 Metodologia
 
-A avaliação de desempenho foi realizada utilizando o Network
+A avaliacao de desempenho foi realizada utilizando o Network
 Simulator 2. Em todos os resultados, as curvas representam uma
-média das execuções, enquanto que as barras de erro, o
-intervalo de confiança para 95% de confiança a partir de 33
-execuções diferentes (sementes aleatórias).
+media das execucoes, enquanto que as barras de erro, o
+intervalo de confianca para 95% de confianca a partir de 33
+execucoes diferentes (sementes aleatorias).
 
-A tabela abaixo apresenta valores padrões para os parâmetros de
-simulação. Os nós sensores são distribuídos no campo de
-monitoramento de acordo com uma grade perturbada, i.e., os nós
-tendem a ocupar a área uniformemente, mas sem formar uma grade
-regular. Para simular os erros de cálculo de atraso de um
-salto, foram utilizadas simulações baseadas em medições. Nestas
-simulações, medições reais obtidas experimentalmente (neste
-caso, os atrasos calculados na seção anterior) são alimentadas
-ao simulador que irá utilizá-los quando necessário. Nesta
-abordagem não se tem os erros estatísticos observados ao se
-utilizar um modelo probabilístico.
+A tabela abaixo apresenta valores padroes para os parametros de
+simulacao. Os nos sensores sao distribuidos no campo de
+monitoramento de acordo com uma grade perturbada, i.e., os nos
+tendem a ocupar a area uniformemente, mas sem formar uma grade
+regular. Para simular os erros de calculo de atraso de um
+salto, foram utilizadas simulacoes baseadas em medicoes. Nestas
+simulacoes, medicoes reais obtidas experimentalmente (neste
+caso, os atrasos calculados na secao anterior) sao alimentadas
+ao simulador que ira utiliza-los quando necessario. Nesta
+abordagem nao se tem os erros estatisticos observados ao se
+utilizar um modelo probabilistico.
 
-Análise dos Resultados
+Analise dos Resultados
 
 Em termos de escalabilidade, o principal fator que afeta o
-algoritmo LiTE é a quantidade de saltos que o pacote percorre
-saindo do nó sensor que detecta o evento até o nó sink. Os
-gráficos da figura abaixo mostram este impacto que a quantidade
-de saltos que o pacote percorre tem sobre o erro de cálculo de
-atraso e, consequentemente, na sincronização do evento. Como
-pode-se observar, os erros obtidos quando o algoritmo LiTE é
-implementado na camada de aplicação são maiores e crescem mais
-rapidamente com o aumento do número de saltos do que quando
-implementado na camada de acesso ao meio. Uma outra observação
-importante é o erro de apenas 1.5 ms após 50 saltos quando o
-LiTE é implementado na camada MAC. Isso se deve ao fato do erro
-de cálculo de atraso de um salto poder ser anulado pelo erro de
-cálculo de atraso do salto seguinte. Ainda nesses gráficos,
+algoritmo LiTE e a quantidade de saltos que o pacote percorre
+saindo do no sensor que detecta o evento ate o no sink. Os
+graficos da figura abaixo mostram este impacto que a quantidade
+de saltos que o pacote percorre tem sobre o erro de calculo de
+atraso e, consequentemente, na sincronizacao do evento. Como
+pode-se observar, os erros obtidos quando o algoritmo LiTE e
+implementado na camada de aplicacao sao maiores e crescem mais
+rapidamente com o aumento do numero de saltos do que quando
+implementado na camada de acesso ao meio. Uma outra observacao
+importante e o erro de apenas 1.5 ms apos 50 saltos quando o
+LiTE e implementado na camada MAC. Isso se deve ao fato do erro
+de calculo de atraso de um salto poder ser anulado pelo erro de
+calculo de atraso do salto seguinte. Ainda nesses graficos,
 estamos comparando os resultados obtidos experimentalmente com
-a simulação dos erros usando uma distribuição normal. Pode-se
-observar uma certa diferença entre os resultados, em especial
-quando nos dados obtidos pela camada de aplicação. Nos gráficos
-seguintes, apenas as simulações baseadas em medições serão
+a simulacao dos erros usando uma distribuicao normal. Pode-se
+observar uma certa diferenca entre os resultados, em especial
+quando nos dados obtidos pela camada de aplicacao. Nos graficos
+seguintes, apenas as simulacoes baseadas em medicoes serao
 apresentadas.
 
-Nos gráficos da figura abaixo, está-se avaliando a robustez do
-algoritmo para sincronizar eventos quando diversos eventos são
-detectados na rede. Para isso, diversos nós na rede, escolhidos
+Nos graficos da figura abaixo, esta-se avaliando a robustez do
+algoritmo para sincronizar eventos quando diversos eventos sao
+detectados na rede. Para isso, diversos nos na rede, escolhidos
 aleatoriamente, detectaram um evento exatamente no mesmo
-instante. O gráfico da figura mostra o comportamento do erro de
-sincronização dos eventos quando estes chegam no nó sink,
-enquanto que o gráfico da figura seguinte mostra a diferença
+instante. O grafico da figura mostra o comportamento do erro de
+sincronizacao dos eventos quando estes chegam no no sink,
+enquanto que o grafico da figura seguinte mostra a diferenca
 entre o menor e o maior tempo estimado do evento. Pode-se
-observar que em ambos os casos, o erro de sincronização dos
-eventos começa a crescer quando muitos eventos são detectados
+observar que em ambos os casos, o erro de sincronizacao dos
+eventos comeca a crescer quando muitos eventos sao detectados
 ao mesmo tempo, devido a atrasos maiores no envio e
 encaminhamento dos pacotes.
 
-Foi avaliado também a capacidade do algoritmo LiTE de ordenar
-eventos na rede. Para isso, nos gráficos das figuras abaixo, 10
+Foi avaliado tambem a capacidade do algoritmo LiTE de ordenar
+eventos na rede. Para isso, nos graficos das figuras abaixo, 10
 eventos foram gerados em ordem e em intervalos de tempo iguais
-(eixo X). Tais eventos foram então sincronizados no sink e
-ordenados usando o LiTE-Apl, LiTE-Mac e também usando a ordem
+(eixo X). Tais eventos foram entao sincronizados no sink e
+ordenados usando o LiTE-Apl, LiTE-Mac e tambem usando a ordem
 de chegada dos pacotes no sink como a ordem dos eventos. Dois
-cenários foram avaliados. No primeiro cenário, os eventos estão
-próximos um do outro (e.g., um som alto sendo detectado por
-diversos sensores) e, no segundo cenário os eventos estão
+cenarios foram avaliados. No primeiro cenario, os eventos estao
+proximos um do outro (e.g., um som alto sendo detectado por
+diversos sensores) e, no segundo cenario os eventos estao
 espalhados aleatoriamente na rede (e.g., animais se movimentado
-em diversas partes). Como pode ser observado nos dois gráficos,
-o algoritmo LiTE-Mac é capaz de acertar 100% da ordem dos
-eventos quando o tempo entre estes é maior do que 5 ms, mesmo
+em diversas partes). Como pode ser observado nos dois graficos,
+o algoritmo LiTE-Mac e capaz de acertar 100% da ordem dos
+eventos quando o tempo entre estes e maior do que 5 ms, mesmo
 no caso em que os eventos se encontram espalhados pela rede.
-Pode-se observar ainda, pelos gráficos, que a ordem de chegada
-dos pacotes no sink não e uma boa fonte de referência,
-principalmente no segundo cenário.
+Pode-se observar ainda, pelos graficos, que a ordem de chegada
+dos pacotes no sink nao e uma boa fonte de referencia,
+principalmente no segundo cenario.
 
-Por último, foi avaliada a capacidade do algoritmo LiTE de
-ordenar eventos à medida que a quantidade destes aumenta e
+Por ultimo, foi avaliada a capacidade do algoritmo LiTE de
+ordenar eventos a medida que a quantidade destes aumenta e
 mantendo-se o tempo entre eventos fixado em 5 ms (figuras
-abaixo). Novamente, foi-se avaliado o cenário em que eventos
-estão próximos e espalhados. Pode-se observar que o algoritmo
+abaixo). Novamente, foi-se avaliado o cenario em que eventos
+estao proximos e espalhados. Pode-se observar que o algoritmo
 LiTE-Mac foi capaz de ordenar corretamente mais de 90% de 20
-eventos que estavam separados por apenas 5 ms de tempo. Além
+eventos que estavam separados por apenas 5 ms de tempo. Alem
 disso, observa-se um comportamento com queda bem mais lenta da
-precisão deste último algoritmo em relação ao algoritmo
-LiTE-Apl e na ordem de chegada dos pacotes no nó sink.
+precisao deste ultimo algoritmo em relacao ao algoritmo
+LiTE-Apl e na ordem de chegada dos pacotes no no sink.
 
-Aplicabilidade e Extensibilidade da Solução Proposta
+Aplicabilidade e Extensibilidade da Solucao Proposta
 
 Os resultados obtidos, em especial pelo algoritmo LiTE-Mac,
-indicam que o mesmo é capaz de sincronizar e ordenar diversos
-eventos separados entre si por apenas 5 ms. Nesta precisão, uma
-aplicação poderia, por exemplo, identificar facilmente a
-localização de um som que estivesse a uma distância de pouco
+indicam que o mesmo e capaz de sincronizar e ordenar diversos
+eventos separados entre si por apenas 5 ms. Nesta precisao, uma
+aplicacao poderia, por exemplo, identificar facilmente a
+localizacao de um som que estivesse a uma distancia de pouco
 mais que 1.7 m dos sensores.
 
-A solução proposta no algoritmo LiTE pode ser facilmente
-utilizada nas mais diversas aplicações dos algoritmos de
-sincronização tradicionais sem a necessidade de modificação:
-localização temporal de eventos; ordenação temporal de eventos;
-rastreamento de objetos; localização de sons; geração de mapas
+A solucao proposta no algoritmo LiTE pode ser facilmente
+utilizada nas mais diversas aplicacoes dos algoritmos de
+sincronizacao tradicionais sem a necessidade de modificacao:
+localizacao temporal de eventos; ordenacao temporal de eventos;
+rastreamento de objetos; localizacao de sons; geracao de mapas
 de energia; etc.
 
 Em outros casos, o algoritmo LiTE pode ser facilmente estendido
 para ser utilizado em algoritmos que precisam de processamento
-temporal distribuído como: fusão de dados: para combinar dados
-relacionados no tempo, cada nó intermediário pode sincronizar
+temporal distribuido como: fusao de dados: para combinar dados
+relacionados no tempo, cada no intermediario pode sincronizar
 os eventos que este for combinar/encaminhar usando a mesma
-técnica executada pelo nó sink no algoritmo LiTE; localização
-de sons e rastreamento in site: nós vizinhos podem trocar
+tecnica executada pelo no sink no algoritmo LiTE; localizacao
+de sons e rastreamento in site: nos vizinhos podem trocar
 pacotes com seus tempos locais e usarem o atraso do pacote para
-sincronizar seus relógios. Após o processamento distribuído, o
-dado processado poderá ser sincronizado globalmente no sink.
+sincronizar seus relogios. Apos o processamento distribuido, o
+dado processado podera ser sincronizado globalmente no sink.
 
-Além disso, o algoritmo LiTE não precisa se preocupar com
-questões como re-sincronização de nós devido ao drift, nós em
-modo sleep, tempo de convergência, complexidade computacional,
-tolerância a falhas, dentre outros; problemas estes que afetam
-todos os algoritmos de sincronização (apesar de poucos
-trabalhos levarem em consideração todos ao mesmo tempo).
+Alem disso, o algoritmo LiTE nao precisa se preocupar com
+questoes como re-sincronizacao de nos devido ao drift, nos em
+modo sleep, tempo de convergencia, complexidade computacional,
+tolerancia a falhas, dentre outros; problemas estes que afetam
+todos os algoritmos de sincronizacao (apesar de poucos
+trabalhos levarem em consideracao todos ao mesmo tempo).
 
-Conclusão
+Conclusao
 
-Este trabalho propôs uma nova abordagem para o problema de
-sincronização e ordenação de eventos em RSSFs: o algoritmo LiTE
--- Localização Temporal de Eventos em RSSFs. For mostrado que,
-em muitos cenários, sincronizar todos os relógios da rede não
-apenas é um processo custoso como também desnecessário. Para
-solucionar tal problema, o algoritmo LiTE propõe a
-sincronização apenas dos eventos, e não dos nós sensores.
+Este trabalho propos uma nova abordagem para o problema de
+sincronizacao e ordenacao de eventos em RSSFs: o algoritmo LiTE
+-- Localizacao Temporal de Eventos em RSSFs. For mostrado que,
+em muitos cenarios, sincronizar todos os relogios da rede nao
+apenas e um processo custoso como tambem desnecessario. Para
+solucionar tal problema, o algoritmo LiTE propoe a
+sincronizacao apenas dos eventos, e nao dos nos sensores.
 
 O desempenho do algoritmo LiTE foi avaliado tanto em
-experimentos práticos, em laboratório com nós sensores reais,
-que comprovaram a aplicabilidade do modelo, como também foi
-avaliado em simulações, mostrando a escalabilidade e robustez
-da solução proposta. O algoritmo LiTE-Mac obteve o melhor
-desempenho nos experimentos realizados, tanto práticos quando
+experimentos praticos, em laboratorio com nos sensores reais,
+que comprovaram a aplicabilidade do modelo, como tambem foi
+avaliado em simulacoes, mostrando a escalabilidade e robustez
+da solucao proposta. O algoritmo LiTE-Mac obteve o melhor
+desempenho nos experimentos realizados, tanto praticos quando
 simulados, e foi capaz de sincronizar eventos a 16 saltos de
-distância com erros próximos a apenas 1 ms e foi capaz ainda de
-ordenar corretamente vários eventos espalhados pela rede e
+distancia com erros proximos a apenas 1 ms e foi capaz ainda de
+ordenar corretamente varios eventos espalhados pela rede e
 distantes apenas 5 ms no tempo uns do outros.
 
-Os resultados obtidos são promissores. Algumas vantagens e
-limitações serão exploradas em trabalhos futuros como, por
+Os resultados obtidos sao promissores. Algumas vantagens e
+limitacoes serao exploradas em trabalhos futuros como, por
 exemplo, identificar claramente quais os procedimentos que
-geram erros não-determinísticos nos sensores e, então,
-modificá-los para reduzir tais atrasos e adaptá-los a uma rede
-que requer sincronização de eventos, uma vez que a
-implementação dos sensores atuais não levam isso em
-consideração.
+geram erros nao-deterministicos nos sensores e, entao,
+modifica-los para reduzir tais atrasos e adapta-los a uma rede
+que requer sincronizacao de eventos, uma vez que a
+implementacao dos sensores atuais nao levam isso em
+consideracao.
