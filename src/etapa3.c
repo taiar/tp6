@@ -13,7 +13,7 @@ void etapa3(Entrada *in, char **expressoes)
   char buff;
   for (i = 0; i < EXPRESSOES_QUANT; i += 1)
   {
-    printf("Expressao: \"%s\"\n", expressoes[i]);
+    fprintf(in->saidaE3, "Expressao: \"%s\"\n", expressoes[i]);
     buff = getc(in->entrada);
     while (buff != EOF)
     {
@@ -38,7 +38,7 @@ void etapa3(Entrada *in, char **expressoes)
       }
       if(expressoes[i][casou] == '\0')
       {
-        printf("Linha %d\n", startLine);
+        fprintf(in->saidaE3, "Linha %d\n", startLine);
         casou = 0;
       }
       buff = getc(in->entrada);
