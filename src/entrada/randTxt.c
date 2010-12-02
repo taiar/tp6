@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #define PALMAXCHARS 15
 #define TAMANHOALFABETO 26
-#define QUANTPALAVRAS 100000000
+#define QUANTPALAVRAS 1000000
 
 int main()
 {
