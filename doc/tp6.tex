@@ -46,7 +46,7 @@ Este relatório descreve a implementação de um sistema de auxílio à confecç
 
 Uma cadeia de caracteres é uma sequência qualquer de elementos que podem ser representados como caracteres. Elas aparecem em várias áreas da computação: processamento de textos em linguagem natural, códigos, dicionários, sequenciamento de DNA em biologia computacional, representação de imagens por meio de bitmaps, entre outros. Neste trabalho, utilizamos a representação de um texto em linguagem natural como uma cadeia de caracteres e utilizamos algoritmos de processamento de cadeias de caracteres para reconhecer diversas informações pertinentes às análises que desejamos fazer.
 
-Neste cenário, 2 tipos de algoritmos foram utilizados, um para cada situação a ser analisada. O primeiro foi um algoritmo baseado em autômato. Foi melhor abordar a modelagem dessa etapa com um autômato finito por se tratar de um parsing da cadeia de caracteres aonde diversos estados podem ser definidos, facilitando a análise com uma máquina de estados. O outro algoritmo, utilizado para resolver a etapa 3, foi um algoritmo de força bruta (que é o algoritmo mais simples para casamento de cadeias de caracteres). Mais detalhes sobre os algoritmos serão vistos na sessão \ref{solucao_proposta}.
+Neste cenário, 2 tipos de algoritmos foram utilizados, um para cada situação a ser analisada. O primeiro foi um algoritmo baseado em autômato. Foi melhor abordar a modelagem dessa etapa com um autômato finito por se tratar de um parsing da cadeia de caracteres aonde diversos estados podem ser definidos, facilitando a análise com uma máquina de estados. O outro algoritmo, utilizado para resolver a etapa 3, foi um algoritmo de força bruta (que é o algoritmo mais simples para casamenfaz a leitura inicial do arquivo de entrada e trabalha com os módulos Camadas e Simulação. Faz a contagem do tempo de execução das partes principais do programa para análise de complexidadeto de cadeias de caracteres). Mais detalhes sobre os algoritmos serão vistos na sessão \ref{solucao_proposta}.
 
 Tanto as \textit{stop words} quanto as expressões e duas entradas de teste foram préviamente fornecidas pelos monitores para que pudéssemos rodar e testar o trabalho. Foi uma condição assumida que o texto não teria qualquer tipo de acentuação, portanto os arquivos de entrada, \textit{stop words} e expressões foram tratados e organizados para isso.
 
@@ -54,6 +54,7 @@ Tanto as \textit{stop words} quanto as expressões e duas entradas de teste fora
 \label{solucao_proposta}
 
 \subsection{Etapa 1}
+\label{etpu}
 Na Etapa 1 o programa deveria fornecer para cada parágrafo do texto:
 \begin{enumerate}
   \item O número da linha no arquivo fonte aonde o parégrafo começa;
@@ -87,6 +88,7 @@ Como as \textit{stop words} estão ordenadas no arquivo que é passado, consegui
 Por ser opcional e pela falta de tempo de implementar a Etapa 2 do trabalho não foi implementada e não será discutida nem analisada no trabalho.
 
 \subsection{Etapa 3}
+\label{etpt}
 Na Etapa 3 temos uma lista de expressões que não existem na língua portuguesa mas que costumam aparecer em alguns textos. Por isso, devemos localizá-las e indicar a linha em que ocorrem no texto. O algoritmo funciona carregando primeiramente a lista das expressões em memória. Em seguida, para cada uma das expressões, varremos o texto uma vez tentando casar a expressão com uma algoritmo de força bruta. Segue o pseudo-código do algoritmo:
 
 \begin{algorithm}[h!]
@@ -109,61 +111,89 @@ String $padrao\longleftarrow$ padrão que deve ser encontrado na cadeia de carac
   }
 }
 
-Este algoritmo tem ordem $O(m * n)$ sendo $m$ o tamanho da cadeia de caracteres do texto e $n$ o tamanho da cadeia de caracteres do padrão a ser encontrado. Como fazemos isso para cada expressão em nossa lista de expressões, a complexidade total do algoritmo é $O(m * n * o)$; sendo $o$ o número de expressões que devemos checar.
-
 \caption{Algoritmo de casamento de padrões por força bruta}
 \end{footnotesize}
 \end{algorithm}
 
+Este algoritmo tem ordem $O(m * n)$ sendo $m$ o tamanho da cadeia de caracteres do texto e $n$ o tamanho da cadeia de caracteres do padrão a ser encontrado. Como fazemos isso para cada expressão em nossa lista de expressões, a complexidade total do algoritmo é $O(m * n * o)$; sendo $o$ o número de expressões que devemos checar.
 
 \section{Código}
 
 \subsection{Módulos}
-O programa foi separado em três módulos:
+O programa foi separado em seis módulos:
 \begin{itemize}
-\item \textbf{Camadas:} define a estrutura da hierarquia de memória utilizada na simulação descrevendo as operações e estruturas de cada camada de memória. Faz a alocação e desalocação de todas essas estruturas.
-\item \textbf{Simulação:} implementa a parte de simulação do trabalho operando sobre a estrutura de hierarquia de memória. Faz a contagem dos dados da simulação como hits, misses e tempos de execução. Além disso contém a implementação de todas as políticas de cache do trabalho.
-\item \textbf{Principal:} faz a leitura inicial do arquivo de entrada e trabalha com os módulos Camadas e Simulação. Faz a contagem do tempo de execução das partes principais do programa para análise de complexidade.
+\item \textbf{Entrada e Saída:} define os campos necessários para ler as informações da linha de comando e dos arquivos e trabalha com os arquivos de entrada e saída. Também contém uma função muito importante que segue o autômato descrito na figura \ref{img:automato} lendo um \textit{token} \footnote{Token em computação é um segmento de texto ou símbolo que pode ser manipulado por um parser, que fornece um significado ao texto; em outras palavras, é um conjunto de caracteres (de um alfabeto, por exemplo) com um significado coletivo.} do arquivo de entrada.
+\item \textbf{Etapa 1:} implementa o algoritmo descrito em \ref{etpu}.
+\item \textbf{Stop Words:} é utilizado pelo módulo \textbf{Etapa 1} para discenir as palavras úteis das \textit{stop words}. Carrega uma lista de palavras de dentro de um arquivo para a memória e libera a memória também. Busca uma palavra para ver se ela é ou não uma \textit{stop word}.
+\item \textbf{Etapa 3:}  implementa o algoritmo descrito em \ref{etpt}.
+\item \textbf{Expressões:} carrega a lista de expressões que deve ser reconhecida pela módulo \textbf{Etapa 3} em memória e libera a memória também.
+\item \textbf{Principal:} interage com todos os outros módulos fazendo com que as estruturas sejam carregadas em memória e descarregadas em seguida. Contabiliza os tempos de execução do programa para análise de complexidade.
 \end{itemize}
 
 \subsection{Entrada e saída}
 \subsubsection{Linha de comando}
-O trabalho não necessita de argumentos para funcionar. Todos os dados serão passados pela entrada principal. Porém, para facilitar a execução e os testes do trabalho, um arquivo pode ser passado como fonte para a entrada padrão da seguinte forma:
-
+\label{linha_de_comando}
+Para não haver problemas com a leitura da linha de comando, foi utilizado um utilitário do
+sistema Linux chamado \textbf{getopt} que permite uma leitura mais robusta dos argumentos
+passados ao programa. O comando para execução do programa definido para a linha de entrada 
+foi:
 \begin{verbatim}
-#: ./tp5 < /caminho/para/o/arquivo
+#: ./tp6 -i <I> -o <O>
 \end{verbatim}
+Sendo: 
+\begin{itemize}
+  \item \textbf{I} - Arquivo de entrada;
+  \item \textbf{O} - Prefixo utilizado nos nomes dos arquivos de saída.
+\end{itemize}
 
 \subsubsection{Formato da entrada}
-Em um mesmo arquivo podem existir vários casos de teste. Em cada um deles, uma hierarquia diferente de memória pode ser definida bem como a série de chamados a objetos em memória. O formato de cada teste é:
-\begin{verbatim}
-nCamdas vCam1 cCam1 polCam1 ... vCamn cCamn polCamn cCam0
-nTestes
-Data1 Time1
-Data2 Time2
-...
-Datat Timet
-\end{verbatim}$nCamdas$ - número de camadas adicionais na hierarquia; \\
-$vCam_{i}$ - velocidade da camada de id \textit{i}; \\
-$cCam_{i}$ - capacidade de armazenamento da camada de id \textit{i}; \\
-$polCam_{i}$ - política de cache utilizada pela camada de id \textit{i}; \\
-$cCam_{0}$ - capacidade de armazenameno da camada 0; \\
-$nTestes$ - número de chamadas a dados que será feito na simulação; \\
-$Data_{i}$ - referência ao dado de id \textit{i}; \\
-$Time_{i}$ - tempo em que o dado de id \textit{i} foi requisitado.
+Não existe um formato padronizado para os arquivos de entrada. Inicialmente foram passados arquivos em português, \textit{stop words} em português e expressões indevidas em português, todos sem acentuação. O sistema funcionaria para qualquer língua com as mesmas considerações feitas nas etapas 1, 2 e 3 desde que o arquivo de \textit{stop words} e o de expressões fosse na mesma língua.
 
 \subsubsection{Formato da saída}
-A saída do programa é retornada na saída padrão do sistema informando a taxa de HIT e MISS de cada camada da hierarquia além do tempo médio total da simulação.
-\begin{verbatim}
-Camada 1 => Cache Hit Ratio = tHit1; Cache Miss Ratio = tMiss1
-Camada 2 => Cache Hit Ratio = tHit2; Cache Miss Ratio = tMiss2
+O programa tem uma saída para cada etapa diferente. O nome do arquivo de saída da etapa $i$ tem o formato $sufixo_{i}$; onde o $sufixo$ é o parâmetro passado na linha de comando como descrito em \ref{linha_de_comando}.
+
+\begin{itemize}
+  \item \textbf{Etapa 1}: 
+  \begin{verbatim}
+Parágrafo 1 começa na linha 1
+Frase 1
+Com stop words: X1
+Sem stop words: Y1
+Frase 2
+Com stop words: X2
+Sem stop words: Y2
 ...
-Camada n => Cache Hit Ratio = tHitN; Cache Miss Ratio = tMissN
-------
-Tempo de resposta médio por requisição = tMedResp T
-\end{verbatim}$tHit_{i}$ - taxa de HIT da camada de id \textit{i}; \\
-$tMiss_{i}$ - taxa de MISS da camada de id \textit{i}; \\
-$tMedResp$ - tempo médio de resposta de todas as requisições.
+Frase N
+Com stop words: XN
+Sem stop words: YN
+...
+
+Parágrafo P começa na linha L
+Frase 1
+Com stop words: X1
+Sem stop words: Y1
+Frase 2
+Com stop words: X2
+Sem stop words: Y2
+...
+  \end{verbatim}
+  \item \textbf{Etapa 3}: 
+  \begin{verbatim}
+Expressao: "expressao 1"
+Linha: a
+...
+Linha: b
+Expressao: "expressao 2"
+Linha: l
+...
+Linha: m
+...
+Expressao: "expressao n"
+Linha: p
+...
+Linha: q
+  \end{verbatim}
+\end{itemize}
 
 \subsection{Compilação}
 O compilador utilizado neste trabalho foi o GCC (adotado como padrão para a disciplina) e 
