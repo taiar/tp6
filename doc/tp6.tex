@@ -29,7 +29,7 @@
 \address{Departamento de Ciência da Computação -- Universidade Federal de Minas Gerais (UFMG)
 \email{taiar@dcc.ufmg.br}
 \\
-\\ Novembro de 2010
+\\ Dezembro de 2010
 }
 
 \begin{document}
@@ -38,77 +38,83 @@
 
 \begin{resumo}
 \label{resumo}
-Este relatório descreve um controlador de hierarquia de memórias e um simulador orientado a eventos para a geração de requisições de dados que estão gravados nesta memória. Foi simulado a requisição de dados que se encontravam em uma camada mais baixa (com alta latência) e utilizado um sistema de hierarquia de camadas de memória acima desta com o efeito de uma Cache para o sistema. Nessas camadas foram implementadas quatro políticas diferentes de Cache e aplicadas arbitráriamente sobre formatos igualmente arbitrários desse sistema. Como resultados pudemos perceber aspectos sobre o ganho da eficiência de sistemas que utilizam Cache e como combinações de diferentes tamanhos de caches e diferentes políticas de manejo de memória podem funcionar ajudando ou atrapalhando o sistema que a utiliza.
+Este relatório descreve a implementação de um sistema de auxílio à confecção de textos que, baseado em algumas premissas sobre más práticas para redação e estatísticas sobre palavras, frases, parágrafos e linhas, consegue indicar alguns pontos em que o texto pode ser melhorado. Foram sugeridas 3 situações em que o programa poderia indicar uma melhora das quais 2 foram implementadas. A primeira trabalha com estatísticas sobre os textos, indicando a ocorrência de parágrafos formados por apenas uma sentença, sentenças muito longas ou muito curtas (as análises também são feitas considerando e ignorando \textit{stop words} \footnote{Stop Words são palavras consideradas sem valor semântico para a análise de tópico de um texto (como artigos e preposições, por exemplo). \href{http://searchenginewatch.com/2156061}{Referência}.} ). A última trabalha com algumas expressões que são frequentemente utilizadas em uma língua mas teóricamente não existem e por isso devem ser evitadas nos textos.
 \end{resumo}
 
 \section{Introdução}
 \label{introducao}
-\textit{"O ideal seria ter uma capacidade de memória infinitamente grande a ponto de qualquer word específica ... estar imediatamente disponível. ... Somos ... forçados a reconhecer a possibilidade de construir uma hierarquia de memórias, cada uma com capacidade maior que a anterior, mas com acessibilidade menos rápida."} \footnote{A. W. Burks, H. H. Goldstine e J. von Neumann - \textit{Preliminary Discussion of the Logical Design of an Electronic Computing Instrument, 1946}}
 
-Hierarquia de memória é, basicamente, uma estrutura organizada em múltiplos níveis de memórias. Tais níveis de são diferenciados usualmente por duas dimensões: o tamanho (ou a capacidade de armazenamento daquele nível) e sua velocidade de acesso (ou sua latência - velocidade com a qual a memória disponibiliza o dado assim que ele é requisitado).
+Uma cadeia de caracteres é uma sequência qualquer de elementos que podem ser representados como caracteres. Elas aparecem em várias áreas da computação: processamento de textos em linguagem natural, códigos, dicionários, sequenciamento de DNA em biologia computacional, representação de imagens por meio de bitmaps, entre outros. Neste trabalho, utilizamos a representação de um texto em linguagem natural como uma cadeia de caracteres e utilizamos algoritmos de processamento de cadeias de caracteres para reconhecer diversas informações pertinentes às análises que desejamos fazer.
 
-Neste trabalho desenvolvemos um simulador para hierarquias arbitrárias de memória. Nele, podemos definir o número de níveis que queremos, a capacidade de cada nível (em uma unidade chamada MUNITS), a velocidade em que cada nível responde à uma requisição (em uma unidade chamada TUNITS) e qual a política de manejo de memória aquele nível utiliza para lidar com os dados quando sua capacidade máxima de armazenamento for atingida. Com uma hierarquia definida, começamos a simular que dados são requeridos por algum sistema que estaria rodando sobre tal plataforma fazendo com que estes dados trafeguem pelo sistema.
+Neste cenário, 2 tipos de algoritmos foram utilizados, um para cada situação a ser analisada. O primeiro foi um algoritmo baseado em autômato. Foi melhor abordar a modelagem dessa etapa com um autômato finito por se tratar de um parsing da cadeia de caracteres aonde diversos estados podem ser definidos, facilitando a análise com uma máquina de estados. O outro algoritmo, utilizado para resolver a etapa 3, foi um algoritmo de força bruta (que é o algoritmo mais simples para casamento de cadeias de caracteres). Mais detalhes sobre os algoritmos serão vistos na sessão \ref{solucao_proposta}.
 
-Inicialmente, todos os dados se encontram em um nível inicial \textbf{0}, que funciona com uma capacidade e velocidade definidas independentemente da hierarquia de memória arbitrária que será simulada. Os dados são rquisitados sempre na camada de ID mais alto definida na hierarquia. Dessa forma, dois cenários são possíveis:
-
-\begin{itemize}
-  \item \textbf{HIT} - o dado é encontrado no nível requisitado;
-  \item \textbf{MISS} - o dado não é encontrado no nível requisitado.
-\end{itemize}
-
-O tempo de resposta em que o dado foi encontrado equivale à velocidade da camada em que o dado foi encontrado. Quando acontece um HIT em uma camada em que um dado foi requisitado, ele é retornado e o HIT da camada é contabilizado. Quando acontece um MISS, o contabilizamos na camada e fazemos a requisição ao mesmo dado em um nível abaixo. As requisições são propagadas níveis abaixo à medida em que os MISS's acontecem até que seja requisitada ao nível 0 quando com certeza acontecerá o HIT. Nesse caso ele não é contabilizado.
-
-Ao final da simulação, fazemos a razão entre os HIT e MISS contabilizados por cada camada e calculamos assim o MISS RATIO 
-e o HIT RATIO:
-\begin{center}
-\[MissRatio = \frac{nMissCamada}{(nHitCamada + nMissCamada)}\]
-\[HitRatio = \frac{nHitCamada}{(nHitCamada + nMissCamada)}\]
-\end{center}
-
-Contabilizamos também o tempo médio gasto em cada chamada à um dado no programa somando todos os tempos de resposta das camadas em acontece HIT e dividindo esse resultado pelo total de chamadas feitas ao programa.
+Tanto as \textit{stop words} quanto as expressões e duas entradas de teste foram préviamente fornecidas pelos monitores para que pudéssemos rodar e testar o trabalho. Foi uma condição assumida que o texto não teria qualquer tipo de acentuação, portanto os arquivos de entrada, \textit{stop words} e expressões foram tratados e organizados para isso.
 
 \section{Solução Proposta}
 \label{solucao_proposta}
 
-Um algoritmo importante na solução é o que cria a estrutura de dados da hierarquia de memória que será simulado. Como ele depende da hierarquia setada na entrada, faremos a sua análise. Foi criado um tipo de dados para representar cada camada. A hierarquia de memória é representada por um vetor dessas camadas. Os dados que cada camada armazena são:
+\subsection{Etapa 1}
+Na Etapa 1 o programa deveria fornecer para cada parágrafo do texto:
+\begin{enumerate}
+  \item O número da linha no arquivo fonte aonde o parégrafo começa;
+  \item o número de sentenças no parágrafo;
+  \item para cada sentença, o número de palavras dela incluindo e não incluindo \textit{stop words}.	
+\end{enumerate}
 
-\begin{algorithm}[h!]
-\begin{footnotesize}
-$politica\longleftarrow$ guarda a política de manejo de memória utilizada pela camada\;
-$capacidade\longleftarrow$ capacidade da camada\;
-$velocidade\longleftarrow$ velocidade com que a camada responde\;
-$ocupacao\longleftarrow$ o quanto da camada de memória já está sendo utilizada\;
-$memoria[capacidade]\longleftarrow$ um vetor do tamanho da capacidade da memória para guardar os dados\;
-\caption{Camada da Hierarquia}
-\end{footnotesize}
-\end{algorithm}
+Respeitando as considerações feitas feitas na especificação acerca de marcação de parágrafos e palavras e sobre pontuação, foi elaborado um autômato que reconhece esse tipo de marcação no texto lendo a cadeia de caracteres um a um. Um exemplo do autômato pode ser visto na figura \ref{img:automato}.
 
-Para indicar que uma posição de memória está vazia, todas as células do vetor $memoria$ são inicialmente marcadas com o valor $-1$. Dessa forma, a complexidade do algoritmo para alocar essa estrutura é $O(n * m)$ onde $n$ é o número de camadas da cache e $m$ é o tamanho da maior capacidade de um nível de memória.
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=10.0cm]{automato.pdf}
+\label{img:automato}
+\caption{Autômato de reconhecimento do texto}
+\end{figure}
 
-Com a estrutura de dados da hierarquia pronta, começamos a simulação requerendo o primeiro dado na primeira camada da hierarquia. A simulação começa como já descrito na sessão anterior e, em algum momento precisaremos gravar um dado em uma camada que já está cheia. Neste caso, devemos utilizar uma política de substituição de dados para escolher qual dado deve sair da memória para o mais novo entrar. Neste trabalho foram implementadas 4 políticas:
-
+Em cada estado final ele retorna um sinal para que saibamos o que fazer com o valor capturado.
 \begin{itemize}
-  \item \textbf{LRU} - \textit{Least Recently Used}: o dado que foi utilizado à mais tempo é descartado;
-  \item \textbf{LFU} - \textit{Least Frequently Used}: o dado que é utilizado menos frequentemente que os outros é descartado;
-  \item \textbf{MRU} - \textit{Most Recently Used}: o dado que foi utilizado à menos tempo é descartado;
-  \item \textbf{FIFO} - \textit{First In First Out}: os dados ficam em "fila" de modo que o que está a mais tempo na fila é descartado.
+  \item $1 \longrightarrow 0$ - casou uma palavra;
+  \item $1 \longrightarrow 2$ - casou uma palavra;
+  \item $2 \longrightarrow 3$ - casou um parágrafo;
+  \item $3 \longrightarrow 0$ - é uma transição vazia ($\lambda$);
+  \item $0 \longrightarrow EOF$ - retorna o fim do arquivo.
 \end{itemize}
 
-Para todas as políticas de substituição temos um algoritmo $O(n)$, porém a \textbf{FIFO} é mais custosa pois, para efeitos de simplificação do código, a fila é implementada como um arranjo fazendo com que todas as células do vetor tenham que ser copiadas para o seu próximo lugar na fila para a entrada de um novo dado.
+Dessa forma conseguimos interpretar o que está acontecendo com o texto à cada caractere que lemos da nossa cadeia, contabilizando semânticamente o que precisamos. As \textit{stop words} que devemos desconsiderar estão em um arquivo que é carregado na memória antes de varrermos o texto seguindo o autômato. Com as palavras em memória, vamos contabilizando as palavras que são e que não são \textit{stop words} à medida que o autômato casa os padrões. 
 
-Para as políticas \textbf{LRU} e \textbf{MRU}, é sempre armazenado o último tempo em que cada dado foi armazenado. Para a política \textbf{LFU} é armazenado o número de vezes em que cada dado foi acessado. Esses dados são armazenados na estrutura de simulação:
+Como as \textit{stop words} estão ordenadas no arquivo que é passado, conseguimos determinar se uma palavra é ou não é relevante com uma ordem de complexidade menor do que $O(n)$. Assim, a complexidade total do algoritmo é $O(n)$; onde $n$ é o número de caracteres na cadeia de entrada (o número de caracteres do texto). Processando o texto como um autômato, precisamos apenas de uma passada para obter as informações que desejamos.
+
+\subsection{Etapa 2}
+Por ser opcional e pela falta de tempo de implementar a Etapa 2 do trabalho não foi implementada e não será discutida nem analisada no trabalho.
+
+\subsection{Etapa 3}
+Na Etapa 3 temos uma lista de expressões que não existem na língua portuguesa mas que costumam aparecer em alguns textos. Por isso, devemos localizá-las e indicar a linha em que ocorrem no texto. O algoritmo funciona carregando primeiramente a lista das expressões em memória. Em seguida, para cada uma das expressões, varremos o texto uma vez tentando casar a expressão com uma algoritmo de força bruta. Segue o pseudo-código do algoritmo:
 
 \begin{algorithm}[h!]
 \begin{footnotesize}
-$tempos[nObjetos] \longleftarrow$ armazena o último tempo em que cada objeto foi requisitado\;
-$frequencias[nObjetos] \longleftarrow$ armazena quantas vezes um objeto foi requisitado\;
-$hits[nCamadas] \longleftarrow$ armazena o número de hits de cada camada\;
-$misses[nCamadas] \longleftarrow$ armazena o número de misses de cada camada\;
-$reqTotal \longleftarrow$ armazena quantas chamadas à dados foram feitas na simulação\;
-$tempoTotal \longleftarrow$ armazena o total de tempo gasto nas respostas às requisições\;
-\caption{Estrutura de simulação}
+String $texto \longleftarrow$ cadeia de caracteres que vamos explorar\;
+String $padrao\longleftarrow$ padrão que deve ser encontrado na cadeia de caracteres\;
+
+\For{int $i=0$; $i < (length(texto) - length(padrao) + 1)$; $i+=1$}
+{
+  int $k = 1$\;
+  int $j = 0$\;
+  \While{$(j < m)$ \& $texto[k] == padrao[j]$}
+  {
+  	$j += 1;$
+  	$k += 1;$
+  	\If{$j == m$}
+  	{
+  		\Return "casou"\;
+  	}
+  }
+}
+
+Este algoritmo tem ordem $O(m * n)$ sendo $m$ o tamanho da cadeia de caracteres do texto e $n$ o tamanho da cadeia de caracteres do padrão a ser encontrado. Como fazemos isso para cada expressão em nossa lista de expressões, a complexidade total do algoritmo é $O(m * n * o)$; sendo $o$ o número de expressões que devemos checar.
+
+\caption{Algoritmo de casamento de padrões por força bruta}
 \end{footnotesize}
 \end{algorithm}
+
 
 \section{Código}
 
